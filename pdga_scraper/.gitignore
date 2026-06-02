@@ -35,3 +35,4 @@ output/
 *.db
 *.csv
 *.parquet
+API notes.txt
