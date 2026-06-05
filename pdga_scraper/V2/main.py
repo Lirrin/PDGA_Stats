@@ -5,8 +5,8 @@
 import requests
 import event_scraper
 import round_scraper
-from .models.event import Event
-from .models.eventdivision import EventDivision
+from models.event import Event
+from models.eventdivision import EventDivision
 
 
 def get_tournament_format(event_id):
@@ -22,18 +22,24 @@ def get_tournament_format(event_id):
             rounds_by_division[round["division"]].append(round)
     
     # Sort each division's rounds and assign ordinal numbers
-    round_list = []
+    round_list = []    
     for division in rounds_by_division:
-        # Sort by the round code to get ordinal order
-        sorted_rounds = sorted(rounds_by_division[division], key=lambda r: r["round"])
+        sorted_rounds = sorted(
+        rounds_by_division[division],
+        key=lambda r: r["round"]
+    )
+
+        num_rounds = len(sorted_rounds)
+
         for ordinal, round in enumerate(sorted_rounds, start=1):
             round_list.append({
                 "round_id": round["roundId"],
                 "division": round["division"],
-                "round_code": round["round"],  # Original code (1, 2, 12, 13)
-                "ordinal_round": ordinal       # Sequential ordinal (1, 2, 3, 4)
+                "round_code": round["round"],
+                "ordinal_round": ordinal,
+                "num_rounds": num_rounds
             })
-    
+
     return round_list
 
 event_list = [96407] # placeholder
@@ -44,50 +50,53 @@ event_divisions = {}
 
 for event_id in event_list:
     rounds = get_tournament_format(event_id)
-    payload = event_scraper.get_event(event_id)
+    #prnt(rounds)
+    #payload = event_scraper.get_event(event_id)
 
-    event_data, divisions, progress, course_layouts, holes = event_scraper.parse_event(event_id, payload)
+    # event_data, divisions, progress, course_layouts, holes = event_scraper.parse_event(event_id, payload)
 
-    events[event_id] = Event(
-        event_id= event_id,
-        name=event_data["name"],
-        date_range=event_data["date_range"],
-        start_date=event_data["start_date"],
-        end_date=event_data["end_date"],
-        location=event_data["location"],
-        location_short=event_data["location_short"],
-        country=event_data["country"],
-        name_main=event_data["name_main"],
-        name_pre=event_data["name_pre"],
-        name_post=event_data["name_post"],
-        raw_tier=event_data["raw_tier"],
-        tier=event_data["tier"],
-        semis=event_data["semis"],
-        td_name=event_data["td_name"],
-        td_pdga_number=event_data["td_pdga_number"],
-        time_zone=event_data["time_zone"],
-        scoring_format=event_data["scoring_format"],
-        tier_x=event_data["tier_x"],
-    )
-    for division in divisions:
-        division_id = division["division_id"]
-        if (event_id, division_id) not in event_divisions.keys():
-            event_divisions[(event_id, division_id)] = EventDivision(
-                event_id = event_id,
-                division_id = division_id,
-                division = division["division"],
-                division_name = division["division_name"],
-                players = int(division["players"]) if division["players"] != "" else None,
-                is_pro = division["is_pro"]
-            )
 
-    for round in rounds:
-        round_payload = round_scraper.get_round(event_id, round["division"], round["round_code"])
-        if int(round["round_id"]) > int(progress["final_round"]):
-            playoff=True
-        else:
-            playoff=False
-        round_info, hole_scores, round_context, players, round_context_stats = round_scraper.parse_round(event_id, round["division"], round["ordinal_round"], round_payload, isPlayoff=playoff)
+
+    # events[event_id] = Event(
+    #     event_id= event_id,
+    #     name=event_data["name"],
+    #     date_range=event_data["date_range"],
+    #     start_date=event_data["start_date"],
+    #     end_date=event_data["end_date"],
+    #     location=event_data["location"],
+    #     location_short=event_data["location_short"],
+    #     country=event_data["country"],
+    #     name_main=event_data["name_main"],
+    #     name_pre=event_data["name_pre"],
+    #     name_post=event_data["name_post"],
+    #     raw_tier=event_data["raw_tier"],
+    #     tier=event_data["tier"],
+    #     semis=event_data["semis"],
+    #     td_name=event_data["td_name"],
+    #     td_pdga_number=event_data["td_pdga_number"],
+    #     time_zone=event_data["time_zone"],
+    #     scoring_format=event_data["scoring_format"],
+    #     tier_x=event_data["tier_x"],
+    # )
+    # for division in divisions:
+    #     division_id = division["division_id"]
+    #     if (event_id, division_id) not in event_divisions.keys():
+    #         event_divisions[(event_id, division_id)] = EventDivision(
+    #             event_id = event_id,
+    #             division_id = division_id,
+    #             division = division["division"],
+    #             division_name = division["division_name"],
+    #             players = int(division["players"]) if division["players"] != "" else None,
+    #             is_pro = division["is_pro"]
+    #         )
+
+    # for round in rounds:
+    #     round_payload = round_scraper.get_round(event_id, round["division"], round["round_code"])
+    #     if int(round["round_id"]) > int(progress["final_round"]):
+    #         playoff=True
+    #     else:
+    #         playoff=False
+    #     round_info, hole_scores, round_context, players, round_context_stats = round_scraper.parse_round(event_id, round["division"], round["ordinal_round"], round_payload, isPlayoff=playoff)
         
 
         

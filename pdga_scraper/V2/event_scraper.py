@@ -83,16 +83,18 @@ def parse_event(event_id: int, payload: dict):
 
     return event, divisions, progress , course_layouts, holes
 
-payload = get_event(96410)
+if __name__ == "__main__": 
+        
+    payload = get_event(96410)
 
-event, divisions, progress , course_layouts, holes = parse_event(96410, payload)
+    event, divisions, progress , course_layouts, holes = parse_event(96410, payload)
 
-print(event)
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print(divisions)
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print(progress)
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print(course_layouts)
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-#print(holes)
+    print(event)
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print(divisions)
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print(progress)
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print(course_layouts)
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    #print(holes)

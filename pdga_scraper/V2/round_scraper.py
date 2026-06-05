@@ -148,16 +148,18 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict, 
 
 
 #payload = get_round(96410, "MPO", 1)
-payload = get_round(96407, "FPO", 13)
 
-#round_info, hole_scores, round_context, players, round_stats = parse_round(96410, "MPO", 1, payload)
-round_info, hole_scores, round_context, players, round_context_stats = parse_round(96407, "FPO", 13, payload)
-print(round_info)
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print(hole_scores[0])
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print(round_context[0])
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print(players[0])
-print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print(round_context_stats[0])
+if __name__ == "__main__":
+    payload = get_round(96407, "FPO", 13)
+
+    #round_info, hole_scores, round_context, players, round_stats = parse_round(96410, "MPO", 1, payload)
+    round_info, hole_scores, round_context, players, round_context_stats = parse_round(96407, "FPO", 13, payload)
+    print(round_info)
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print(hole_scores[0])
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print(round_context[0])
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print(players[0])
+    print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
+    print(round_context_stats[0])
