@@ -11,7 +11,8 @@ This layer contains NO storage logic (that's in storage/).
 """
 
 import logging
-from typing import Any, Dict, List, Optional
+import requests
+from typing import Any, Dict, List, Optional, Tuple
 from datetime import datetime
 
 from .client import PDGAClient
@@ -41,26 +42,34 @@ def parse_event(event_json: Dict[str, Any]) -> Event:
         ValueError: If data types don't match expectations
     """
     try:
-        event_id = int(event_json["TournID"])
-        name = event_json.get("TournName", "Unknown")
-        location = event_json.get("Location", "Unknown")
-        
+        # Support two API shapes:
+        # 1) Legacy flat response with keys like 'TournID', 'TournName', etc.
+        # 2) Newer nested response under a top-level 'data' dict (common for DGPT)
+        src = event_json
+        if "data" in event_json and isinstance(event_json["data"], dict):
+            src = event_json["data"]
+
+        # Try several possible keys for event id/name/location to be robust.
+        event_id = int(src.get("TournID") or src.get("TournamentId") or src.get("TournamentID") or src.get("TournamentId"))
+        name = src.get("TournName") or src.get("Name") or src.get("SimpleName") or "Unknown"
+        location = src.get("Location") or src.get("LocationShort") or "Unknown"
+
         # Parse dates - handle various formats
-        start_date_str = event_json.get("StartDate", "")
-        end_date_str = event_json.get("EndDate", "")
-        
+        start_date_str = src.get("StartDate", "")
+        end_date_str = src.get("EndDate", "")
+
         start_date = _parse_date(start_date_str)
         end_date = _parse_date(end_date_str)
-        
+
         event = Event(
             id=event_id,
             name=name,
             location=location,
             date_start=start_date,
             date_end=end_date,
-            course=event_json.get("CourseName"),
-            level=event_json.get("TournLevel"),
-            division=event_json.get("Division"),
+            course=src.get("CourseName"),
+            level=src.get("TournLevel") or src.get("Tier"),
+            division=src.get("Division"),
         )
         return event
     except (KeyError, ValueError, TypeError) as e:
@@ -220,7 +229,7 @@ def scrape_event(
     event_id: int,
     client: Optional[PDGAClient] = None,
     cookies: Optional[Dict[str, str]] = None,
-) -> tuple[Event, List[RoundScore], List[Player]]:
+) -> Tuple[Event, List[RoundScore], List[Player]]:
     """Scrape all data for a single event.
     
     This is the main orchestration function that:
@@ -253,7 +262,37 @@ def scrape_event(
         
         # Fetch and parse round scores (all rounds for all players)
         logger.debug("Fetching round scores for event %s", event_id)
-        scores_json = client.get_event_rounds(event_id, cookies=cookies)
+        try:
+            scores_json = client.get_event_rounds(event_id, cookies=cookies)
+        except requests.exceptions.HTTPError as e:
+            # Some APIs return rounds per-call and the bulk rounds endpoint may not exist.
+            # Fallback: build combined results by fetching each round individually
+            logger.warning("Bulk rounds endpoint failed (%s). Falling back to per-round fetch.", e)
+            combined_results = []
+            src = event_json.get("data") if isinstance(event_json.get("data"), dict) else event_json
+            rounds_list = src.get("RoundsList") or {}
+            round_nums = []
+            for k in rounds_list.keys():
+                try:
+                    round_nums.append(int(k))
+                except Exception:
+                    continue
+            round_nums = sorted(set(round_nums))
+            for rn in round_nums:
+                try:
+                    rjson = client.get_round_scores(event_id, rn, cookies=cookies)
+                    # Expecting a list of results in rjson['results'] or rjson itself
+                    if isinstance(rjson, dict) and "results" in rjson:
+                        combined_results.extend(rjson.get("results", []))
+                    elif isinstance(rjson, dict) and "data" in rjson and isinstance(rjson["data"], dict):
+                        combined_results.extend(rjson["data"].get("results", []) or [])
+                    elif isinstance(rjson, list):
+                        combined_results.extend(rjson)
+                except Exception as ex:
+                    logger.warning("Failed to fetch/parse round %s: %s", rn, ex)
+                    continue
+            scores_json = {"results": combined_results}
+
         round_scores, players = _parse_round_scores_and_players(scores_json, event_id)
         logger.info("Parsed %d round scores and %d players", len(round_scores), len(players))
         
@@ -303,7 +342,7 @@ def scrape_round_hole_scores(
 
 def _parse_round_scores_and_players(
     scores_json: Dict[str, Any], event_id: int
-) -> tuple[List[RoundScore], List[Player]]:
+) -> Tuple[List[RoundScore], List[Player]]:
     """Parse round scores and players from round results JSON.
     
     This handles the complex JSON structure returned by get_event_rounds.

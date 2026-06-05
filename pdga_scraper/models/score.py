@@ -3,7 +3,7 @@ Score data models for holes and complete rounds.
 """
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 
 
@@ -63,7 +63,7 @@ class RoundScore:
     notes: Optional[str] = None
     
     # Individual hole scores (can be loaded separately)
-    hole_scores: Optional[list[HoleScore]] = None
+    hole_scores: Optional[List[HoleScore]] = None
     
     @property
     def score_differential(self) -> int:

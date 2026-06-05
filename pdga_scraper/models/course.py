@@ -3,7 +3,7 @@ Course and layout data models.
 """
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List
 
 
 @dataclass
@@ -27,7 +27,7 @@ class Course:
     location: str
     country: Optional[str] = None
     state: Optional[str] = None
-    layouts: Optional[list[Layout]] = None
+    layouts: Optional[List[Layout]] = None
 
     def __str__(self):
         return f"{self.name} ({self.location})"
