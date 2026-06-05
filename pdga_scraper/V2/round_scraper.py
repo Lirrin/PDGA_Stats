@@ -20,7 +20,7 @@ def get_round_stats(score_id):
     url = f"https://www.pdga.com/api/v1/feat/live-scores/{score_id}/round-stats"  
     return requests.get(url).json()
 
-def parse_round(event_id: int, division: str, round_number: int, payload: dict):
+def parse_round(event_id: int, division: str, round_number: int, payload: dict, isPlayoff = False):
     data = payload["data"]
     layouts = data["layouts"][0] # should only be 1 layout but its a list in the data so we have to pull it out like this - might need to change if we want to support multiple layouts in a round in the future
     round_info = {
@@ -34,6 +34,7 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict):
         "live_round_id": data["live_round_id"], #might need this unsure
         "shotgun_time": data["shotgun_time"],
         "tee_times": data["tee_times"],
+        "is_playoff": isPlayoff
     }
 
     round_context = []
@@ -146,9 +147,11 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict):
     return round_info, hole_scores, round_context, players, round_context_stats
 
 
-payload = get_round(96410, "MPO", 1)
+#payload = get_round(96410, "MPO", 1)
+payload = get_round(96407, "FPO", 13)
 
-round_info, hole_scores, round_context, players, round_stats = parse_round(96410, "MPO", 1, payload)
+#round_info, hole_scores, round_context, players, round_stats = parse_round(96410, "MPO", 1, payload)
+round_info, hole_scores, round_context, players, round_context_stats = parse_round(96407, "FPO", 13, payload)
 print(round_info)
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 print(hole_scores[0])
@@ -157,4 +160,4 @@ print(round_context[0])
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
 print(players[0])
 print('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~')
-print(round_stats[0])
+print(round_context_stats[0])

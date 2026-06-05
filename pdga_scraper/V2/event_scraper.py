@@ -27,7 +27,7 @@ def parse_event(event_id: int, payload: dict):
         "semis": data["Semis"],
         "td_name": data["TDName"],
         "td_pdga_number": data["TDPDGANum"],
-        "TimeZone": data["TimeZone"],
+        "timezone": data["TimeZone"],
         "scoring_format": data["ScoringFormat"],
         "tier_x": data["TierX"] # binary flag for if its an X tier event
     }
@@ -75,7 +75,7 @@ def parse_event(event_id: int, payload: dict):
 
     progress = {
         "event_id": event_id,
-        "highest_completed_round": data["HighestCompletedRound"],
+        "highest_completed_round": data["HighestCompletedRound"], #if playoff it will be greater than latest round/final round
         "latest_round": data["LatestRound"],
         "final_round": data["FinalRound"],
         "finals": data["Finals"]
