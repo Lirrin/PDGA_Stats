@@ -1,13 +1,13 @@
 import requests
 import time
 
-def get_round(event_id, division, round_number):
+def get_round(event_id, division, round_id):
     url = "https://www.pdga.com/apps/tournament/live-api/live_results_fetch_round"
     
     params = {
         "TournID": event_id,
         "Division": division,
-        "Round": round_number
+        "Round": round_id # this isn't necessarily round number, for events with cuts finals round is given a different number
     }
     
     return requests.get(url, params=params).json()
