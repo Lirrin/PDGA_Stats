@@ -8,6 +8,7 @@ class PlayerRound:
     result_id: int
     round_id: int
     score_id: int
+    pdga_number: int
 
     # Round identity
     round_code: int

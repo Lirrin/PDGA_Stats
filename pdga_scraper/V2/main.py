@@ -173,6 +173,7 @@ for event_id in event_list:
                 result_id = result_id,
                 round_id = round_id,
                 score_id = score_id,
+                pdga_number = round_context["pdga_number"],
                 round_code = round["round_code"],
                 round_number = round["ordinal_round"],
                 is_playoff = playoff,
