@@ -7,7 +7,9 @@ def get_event(event_id):
 
 
 
-def parse_event(event_id: int, payload: dict):
+def parse_event(event_id: int, payload: dict, debug=False):
+    if debug:
+        print(f"Now Parsing {event_id}")
     data = payload["data"]
 
     event = {

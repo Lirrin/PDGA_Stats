@@ -50,7 +50,7 @@ def get_tournament_format(event_id):
     return round_list, num_rounds
 
 event_list = [96407, # fpo playoff + mpo weather cancellation
-              96708, #has a  cut
+              96408, #has a  cut
               97336 # pdga major
               ] # placeholder
 
@@ -67,13 +67,14 @@ tournament_player = {}
 all_players = {}
 player_round_stats = {}
 
+debug = True
 
 for event_id in event_list:
     rounds, num_rounds_dict = get_tournament_format(event_id)
     
     payload = event_scraper.get_event(event_id)
 
-    event_data, divisions, progress, layouts, holes = event_scraper.parse_event(event_id, payload)
+    event_data, divisions, progress, layouts, holes = event_scraper.parse_event(event_id, payload, debug=debug)
 
 
     events[event_id] = Event(
@@ -153,7 +154,7 @@ for event_id in event_list:
             playoff=True
         else:
             playoff=False
-        round_info, hole_scores, round_context, players, round_context_stats = round_scraper.parse_round(event_id, round["division"], round["ordinal_round"], round_payload)
+        round_info, hole_scores, round_context, players, round_context_stats = round_scraper.parse_round(event_id, round["division"], round["ordinal_round"], round_payload, debug=debug)
         
         #tournament_rounds = {}
         if round_id not in tournament_rounds.keys():

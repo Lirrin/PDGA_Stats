@@ -20,8 +20,12 @@ def get_round_stats(score_id):
     url = f"https://www.pdga.com/api/v1/feat/live-scores/{score_id}/round-stats"  
     return requests.get(url).json()
 
-def parse_round(event_id: int, division: str, round_number: int, payload: dict):
+def parse_round(event_id: int, division: str, round_number: int, payload: dict, debug=False):
     data = payload["data"]
+
+    if debug:
+        print(f"Now Parsing: {event_id}, division: {division}, round: {round_number}")
+
     layouts = data["layouts"][0] # should only be 1 layout but its a list in the data so we have to pull it out like this - might need to change if we want to support multiple layouts in a round in the future
     round_info = {
         "event_id": event_id,
