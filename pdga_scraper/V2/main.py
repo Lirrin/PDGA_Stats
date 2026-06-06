@@ -15,6 +15,7 @@ from models.playerround import PlayerRound
 from models.tournamentplayer import TournamentPlayer
 from models.pdgaplayer import PDGAPlayer
 from models.holescore import HoleScore
+from models.playerroundstats import PlayerRoundStats
 
 def get_tournament_format(event_id):
     url = f"https://www.pdga.com/api/v1/live-tournaments/{event_id}/live-rounds?include=LiveRoundCut"
@@ -172,7 +173,7 @@ for event_id in event_list:
             result_id = context["result_id"]
             score_id = context["score_id"]
             pdga_num = context["pdga_number"]
-            if (round_id, result_id, score_id) not in player_rounds.keys():
+            if (round_id, result_id, score_id) not in player_rounds.keys(): #do we need this theoretically no dupes
                 player_rounds[(round_id, result_id, score_id)] = PlayerRound(
                     result_id = result_id,
                     round_id = round_id,
@@ -212,7 +213,7 @@ for event_id in event_list:
             result_id = score["result_id"]
             score_id = score["score_id"]
             hole_num = score["hole_number"]
-            if (round_id, result_id, score_id, hole_num) not in player_scores.keys():
+            if (round_id, result_id, score_id, hole_num) not in player_scores.keys(): # is this needed, theoretically there should be no dupes
                 player_scores[(round_id, result_id, score_id, hole_num)] = HoleScore(
                     result_id = result_id,
                     round_id = round_id,
@@ -228,11 +229,11 @@ for event_id in event_list:
                     c1x = score["c1x"],
                     c1 = score["c1"],
                     c2 = score["c2"],
-                    throwIn = score["throwIn"],
+                    throw_in = score["throwIn"],
                     ob = score["ob"],
                     hazard = score["hazard"],
-                    missedMando = score["missedMando"],
-                    lostDisc = score["lostDisc"],
+                    missed_mando = score["missedMando"],
+                    lost_disc = score["lostDisc"],
                     penalty = score["penalty"]
                 )
 
@@ -254,6 +255,16 @@ for event_id in event_list:
 
 
         #player_round_stats = {}
+        for rnd_stats in round_context_stats: 
+            score_id = rnd_stats["score_id"]
+            player_round_stats[score_id] = PlayerRoundStats(
+                score_id = score_id,
+                stat_id = rnd_stats["stat_id"],
+                stat_count = rnd_stats["stat_count"],
+                stat_opportunity = rnd_stats["stat_opportunity_count"],
+                stat_value = rnd_stats["stat_value"]
+            )
+
 
 
 
