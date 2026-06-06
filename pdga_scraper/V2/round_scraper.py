@@ -45,50 +45,6 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict):
         pars = player_round.get("Pars", "").split(",")
         score_id = player_round["ScoreID"]
 
-        hole_breakdowns = get_hole_breakdown(score_id=score_id)
-        round_stats = get_round_stats(score_id=score_id)
-
-        breakdown_by_hole = {
-            h["holeOrdinal"]: h
-            for h in hole_breakdowns
-        }
-
-        for i, score in enumerate(player_round.get("HoleScores", [])):
-            breakdown = breakdown_by_hole.get(i+1, None)
-
-            hole_score = int(score) if score != "" else None
-            par = int(pars[i]) if i < len(pars) and pars[i] != "" else None
-
-            score_to_par = (
-                hole_score - par
-                if hole_score is not None and par is not None
-                else None
-            )
-
-            hole_scores.append({
-                "result_id": player_round["ResultID"], # Think this is the pk for player x round x scorecard - maybe
-                "round_id": player_round["RoundID"], #ties to live round ID at round info level, so theoretically don't need event id
-                "score_id": score_id, # score id ties to the stats for the hole score and round
-                "round_number": round_number,
-                "pdga_number": player_round["PDGANum"],
-                "hole_number": i+1,
-                "score": hole_score,
-                "par": par,
-                "score_to_par": score_to_par,
-                #additional breakdown info we can pull in if we want
-                "driving": breakdown.get("driving"),
-                "scramble": breakdown.get("scramble"),
-                "green": breakdown.get("green"),
-                "c1x": breakdown.get("c1x"),
-                "c1": breakdown.get("c1"),
-                "c2": breakdown.get("c2"),
-                "throwIn": breakdown.get("throwIn"),
-                "ob": breakdown.get("ob"),
-                "hazard": breakdown.get("hazard"),
-                "missedMando": breakdown.get("missedMando"),
-                "lostDisc": breakdown.get("lostDisc"),
-                "penalty": breakdown.get("penalty")
-            })
         round_context.append({
             # IDs
             "result_id": player_round["ResultID"], # unsure the difference between result id and score id
@@ -134,15 +90,62 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict):
             "full_location": player_round["FullLocation"],
             "nationality": player_round["Nationality"]
         })
-        for stat in round_stats:
-            round_context_stats.append({
-                "score_id": score_id,
-                "stat_id": stat["statId"],
-                "stat_count": stat["statCount"],
-                "stat_opportunity_count": stat["statOpportunityCount"],
-                "stat_value": stat["statValue"]
-            })
-        
+
+        if score_id is not None: 
+            hole_breakdowns = get_hole_breakdown(score_id=score_id)
+            round_stats = get_round_stats(score_id=score_id)
+
+            breakdown_by_hole = {
+                h["holeOrdinal"]: h
+                for h in hole_breakdowns
+            }
+
+            for i, score in enumerate(player_round.get("HoleScores", [])):
+                breakdown = breakdown_by_hole.get(i+1, None)
+
+                hole_score = int(score) if score != "" else None
+                par = int(pars[i]) if i < len(pars) and pars[i] != "" else None
+
+                score_to_par = (
+                    hole_score - par
+                    if hole_score is not None and par is not None
+                    else None
+                )
+
+                hole_scores.append({
+                    "result_id": player_round["ResultID"], # Think this is the pk for player x round x scorecard - maybe
+                    "round_id": player_round["RoundID"], #ties to live round ID at round info level, so theoretically don't need event id
+                    "score_id": score_id, # score id ties to the stats for the hole score and round
+                    "round_number": round_number,
+                    "pdga_number": player_round["PDGANum"],
+                    "hole_number": i+1,
+                    "score": hole_score,
+                    "par": par,
+                    "score_to_par": score_to_par,
+                    #additional breakdown info we can pull in if we want
+                    "driving": breakdown.get("driving"),
+                    "scramble": breakdown.get("scramble"),
+                    "green": breakdown.get("green"),
+                    "c1x": breakdown.get("c1x"),
+                    "c1": breakdown.get("c1"),
+                    "c2": breakdown.get("c2"),
+                    "throwIn": breakdown.get("throwIn"),
+                    "ob": breakdown.get("ob"),
+                    "hazard": breakdown.get("hazard"),
+                    "missedMando": breakdown.get("missedMando"),
+                    "lostDisc": breakdown.get("lostDisc"),
+                    "penalty": breakdown.get("penalty")
+                })
+            
+            for stat in round_stats:
+                round_context_stats.append({
+                    "score_id": score_id,
+                    "stat_id": stat["statId"],
+                    "stat_count": stat["statCount"],
+                    "stat_opportunity_count": stat["statOpportunityCount"],
+                    "stat_value": stat["statValue"]
+                })
+            
         time.sleep(0.5) # to avoid hitting api rate limits 
 
     return round_info, hole_scores, round_context, players, round_context_stats

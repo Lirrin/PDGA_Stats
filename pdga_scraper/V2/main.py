@@ -14,6 +14,7 @@ from models.holescore import HoleScore
 from models.playerroundstats import PlayerRoundStats
 import pandas as pd
 from pathlib import Path
+import time
 
 def get_tournament_format(event_id):
     url = f"https://www.pdga.com/api/v1/live-tournaments/{event_id}/live-rounds?include=LiveRoundCut"
@@ -75,73 +76,73 @@ for event_id in event_list:
     event_data, divisions, progress, layouts, holes = event_scraper.parse_event(event_id, payload)
 
 
-    # events[event_id] = Event(
-    #     event_id= event_id,
-    #     name=event_data["name"],
-    #     #date_range=event_data["date_range"],
-    #     start_date=event_data["start_date"],
-    #     end_date=event_data["end_date"],
-    #     location_full=event_data["location"],
-    #     location_short=event_data["location_short"],
-    #     country=event_data["country"],
-    #     name_main=event_data["name_main"],
-    #     name_pre=event_data["name_pre"],
-    #     name_post=event_data["name_post"],
-    #     tier_code=event_data["raw_tier"],
-    #     tier_name=event_data["tier"],
-    #     #semis=event_data["semis"],
-    #     td_name=event_data["td_name"],
-    #     td_pdga_number=event_data["td_pdga_number"],
-    #     time_zone=event_data["timezone"],
-    #     scoring_format=event_data["scoring_format"],
-    #     is_x_tier=event_data["tier_x"],
-    # )
-    # for division in divisions:
-    #     division_id = division["division_id"]
+    events[event_id] = Event(
+        event_id= event_id,
+        name=event_data["name"],
+        #date_range=event_data["date_range"],
+        start_date=event_data["start_date"],
+        end_date=event_data["end_date"],
+        location_full=event_data["location"],
+        location_short=event_data["location_short"],
+        country=event_data["country"],
+        name_main=event_data["name_main"],
+        name_pre=event_data["name_pre"],
+        name_post=event_data["name_post"],
+        tier_code=event_data["raw_tier"],
+        tier_name=event_data["tier"],
+        #semis=event_data["semis"],
+        td_name=event_data["td_name"],
+        td_pdga_number=event_data["td_pdga_number"],
+        time_zone=event_data["timezone"],
+        scoring_format=event_data["scoring_format"],
+        is_x_tier=event_data["tier_x"],
+    )
+    for division in divisions:
+        division_id = division["division_id"]
         
-    #     if (event_id, division_id) not in event_divisions.keys():
-    #         event_divisions[(event_id, division_id)] = EventDivision(
-    #             event_id = event_id,
-    #             division_id = division_id,
-    #             division_code = division["division"],
-    #             division_name = division["division_name"],
-    #             player_count = int(division["players"]) if division["players"] != "" else None,
-    #             is_pro = division["is_pro"],
-    #             final_round_code = progress["final_round"]
-    #         )
+        if (event_id, division_id) not in event_divisions.keys():
+            event_divisions[(event_id, division_id)] = EventDivision(
+                event_id = event_id,
+                division_id = division_id,
+                division_code = division["division"],
+                division_name = division["division_name"],
+                player_count = int(division["players"]) if division["players"] != "" else None,
+                is_pro = division["is_pro"],
+                final_round_code = progress["final_round"]
+            )
 
-    # for layout in layouts:
-    #     course_id = layout["course_id"]
-    #     layout_id = layout["layout_id"]
-    #     if course_id not in courses.keys():
-    #         courses[course_id] = Course(
-    #                 course_id=course_id,
-    #                 course_name=layout["course_name"]
-    #         )
+    for layout in layouts:
+        course_id = layout["course_id"]
+        layout_id = layout["layout_id"]
+        if course_id not in courses.keys():
+            courses[course_id] = Course(
+                    course_id=course_id,
+                    course_name=layout["course_name"]
+            )
 
-    #     if (course_id, layout_id) not in course_layouts.keys():
-    #         course_layouts[(course_id, layout_id)] = CourseLayout(
-    #             course_id=course_id,
-    #             layout_id=layout_id,
-    #             layout_name = layout["layout_name"],
-    #             hole_count = layout["holes"],
-    #             course_par = layout["par"],
-    #             total_length = layout["length"],
-    #             length_unit = layout["units"]
-    #         )
+        if (course_id, layout_id) not in course_layouts.keys():
+            course_layouts[(course_id, layout_id)] = CourseLayout(
+                course_id=course_id,
+                layout_id=layout_id,
+                layout_name = layout["layout_name"],
+                hole_count = layout["holes"],
+                course_par = layout["par"],
+                total_length = layout["length"],
+                length_unit = layout["units"]
+            )
 
-    # for hole in holes:
-    #     layout_id = hole["layout_id"]
-    #     hole_num = hole["hole_number"]
+    for hole in holes:
+        layout_id = hole["layout_id"]
+        hole_num = hole["hole_number"]
 
-    #     if (layout_id, hole_num) not in layout_holes.keys():
-    #             layout_holes[layout_id, hole_num] = Hole(
-    #             layout_id = layout_id,
-    #             hole_number = hole_num,
-    #             hole_par = hole["hole_par"],
-    #             hole_length = hole["hole_length"],
-    #             length_unit = hole["units"]
-    #     )
+        if (layout_id, hole_num) not in layout_holes.keys():
+                layout_holes[layout_id, hole_num] = Hole(
+                layout_id = layout_id,
+                hole_number = hole_num,
+                hole_par = hole["hole_par"],
+                hole_length = hole["hole_length"],
+                length_unit = hole["units"]
+        )
 
 
 
@@ -264,6 +265,12 @@ for event_id in event_list:
                 stat_opportunity = rnd_stats["stat_opportunity_count"],
                 stat_value = rnd_stats["stat_value"]
             )
+        #sleep between rounds
+        time.sleep(5) # to avoid hitting api rate limits 
+
+    #sleep between events
+    time.sleep(30) # to avoid hitting api rate limits 
+        
 
 #BELOW HERE IS DEBUG ONLY
 
