@@ -7,6 +7,8 @@ import event_scraper
 import round_scraper
 from models.event import Event
 from models.eventdivision import EventDivision
+from models.course import Course
+from models.courselayout import CourseLayout
 
 
 def get_tournament_format(event_id):
@@ -73,7 +75,7 @@ for event_id in event_list:
         semis=event_data["semis"],
         td_name=event_data["td_name"],
         td_pdga_number=event_data["td_pdga_number"],
-        time_zone=event_data["time_zone"],
+        time_zone=event_data["timezone"],
         scoring_format=event_data["scoring_format"],
         tier_x=event_data["tier_x"],
     )
@@ -93,15 +95,36 @@ for event_id in event_list:
             )
 
     #for now don't think I need progress
+    courses = {}
+    course_layouts = {}
+    for layout in course_layouts:
+        course_id = layout["course_id"]
+        layout_id = layout["layout_id"]
+        if course_id not in courses.keys():
+            courses[course_id] = Course(
+                    course_id=course_id,
+                    course_name=layout["course_name"]
+            )
+
+        if layout_id not in course_layouts.keys():
+            course_layouts[layout_id] = CourseLayout(
+                course_id=course_id,
+                layout_id=layout_id,
+                layout_name = layout["layout_name"],
+                holes = layout["holes"],
+                length = layout["length"],
+                units = layout["units"]
+            )
 
 
-    for round in rounds:
-        round_payload = round_scraper.get_round(event_id, round["division"], round["round_code"])
-        if int(round["round_id"]) > int(progress["final_round"]):
-            playoff=True
-        else:
-            playoff=False
-        round_info, hole_scores, round_context, players, round_context_stats = round_scraper.parse_round(event_id, round["division"], round["ordinal_round"], round_payload, isPlayoff=playoff)
+
+    # for round in rounds:
+    #     round_payload = round_scraper.get_round(event_id, round["division"], round["round_code"])
+    #     if int(round["round_id"]) > int(progress["final_round"]):
+    #         playoff=True
+    #     else:
+    #         playoff=False
+    #     round_info, hole_scores, round_context, players, round_context_stats = round_scraper.parse_round(event_id, round["division"], round["ordinal_round"], round_payload, isPlayoff=playoff)
         
 
         
