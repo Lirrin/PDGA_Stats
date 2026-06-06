@@ -12,6 +12,7 @@ from models.courselayout import CourseLayout
 from models.hole import Hole
 from models.tournamentround import TournamentRound
 from models.playerround import PlayerRound
+from models.tournamentplayer import TournamentPlayer
 
 
 def get_tournament_format(event_id):
@@ -166,32 +167,44 @@ for event_id in event_list:
             )
 
         #player_rounds = {}
-        result_id = hole_scores["result_id"]
-        score_id = hole_scores["score_id"]
-        if (round_id, result_id, score_id) not in player_rounds.keys():
-            player_rounds[(round_id, result_id, score_id)] = PlayerRound(
-                result_id = result_id,
-                round_id = round_id,
-                score_id = score_id,
-                pdga_number = round_context["pdga_number"],
-                round_code = round["round_code"],
-                round_number = round["ordinal_round"],
-                is_playoff = playoff,
-                pool = round_context["pool"],
-                card_number = round_context["card_number"],
-                tee_time = round_context["TeeTime"],
-                previous_place = round_context["previous_place"] if round["ordinal_round"] > 1 else None,
-                post_place = round_context["running_place"],
-                tied = round_context["tied"],
-                round_rating = round_context["round_rating"],
-                is_complete = bool(round_context["complete"]),
-                previous_total_score = round_context["previous_round_score"],
-                round_score = round_context["round_score"],
-                post_total_score = round_context["subtotal"],
-                round_to_par = round_context["round_to_par"],
-                total_to_par = round_context["par_thru_round"]
-            )
-        #tournament_player = {}
+        for context in round_context:
+            result_id = context["result_id"]
+            score_id = context["score_id"]
+            pdga_num = context["pdga_number"]
+            if (round_id, result_id, score_id) not in player_rounds.keys():
+                player_rounds[(round_id, result_id, score_id)] = PlayerRound(
+                    result_id = result_id,
+                    round_id = round_id,
+                    score_id = score_id,
+                    pdga_number = pdga_num,
+                    round_code = round["round_code"],
+                    round_number = round["ordinal_round"],
+                    is_playoff = playoff,
+                    pool = context["pool"],
+                    card_number = context["card_number"],
+                    tee_time = context["TeeTime"],
+                    previous_place = context["previous_place"] if round["ordinal_round"] > 1 else None,
+                    post_place = context["running_place"],
+                    tied = context["tied"],
+                    round_rating = context["round_rating"],
+                    is_complete = bool(context["complete"]),
+                    previous_total_score = context["previous_round_score"],
+                    round_score = context["round_score"],
+                    post_total_score = context["subtotal"],
+                    round_to_par = context["round_to_par"],
+                    total_to_par = context["par_thru_round"]
+                )
+            #tournament_player = {}
+            if (event_id, pdga_num) not in tournament_player.keys():
+                tournament_player[(event_id, pdga_num)] = TournamentPlayer(
+                    event_id = event_id,
+                    pdga_number = pdga_num, 
+                    rating_at_event = context["rating_at_event"],
+                    won_playoff = context["won_playoff"],
+                    prize = context["prize"],
+                    total_strokes = context["grand_total"]
+                )
+
 
         #player_scores = {}
 

@@ -116,7 +116,7 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict):
             #Total Scores
             #"played": player_round["Played"], # number of holes played in the round
             "previous_round_score": player_round["PrevRndTotal"], # total score from prior round
-            #"grand_total": player_round["GrandTotal"], # total for the tournament - shows all rounds even if you ask for an earlier round
+            "grand_total": player_round["GrandTotal"], # total for the tournament - shows all rounds even if you ask for an earlier round
             "round_score": player_round["RoundScore"], #total for the round - live if in progress 
             "sub_total": player_round["SubTotal"], # live if in progress, total for all strokes played in tournament thru current round
             "round_to_par": player_round["RoundtoPar"], # difference between round score and par
