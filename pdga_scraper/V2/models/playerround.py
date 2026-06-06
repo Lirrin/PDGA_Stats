@@ -5,7 +5,7 @@ from datetime import datetime
 @dataclass
 class PlayerRound:
     "Represents a Player's Round in a Tournament"
-    result_id: int
+    #result_id: int
     round_id: int
     score_id: int
     pdga_number: int
@@ -21,20 +21,20 @@ class PlayerRound:
     tee_time: Optional[str]
 
     # Placement
-    previous_place: Optional[int]
-    post_place: int
-    tied: bool
+    place_before_round: Optional[int]
+    place_after_round: int
+    is_tied: bool
 
     # Performance metrics
     round_rating: int
     is_complete: bool
 
-    previous_total_score: int
+    total_score_before_round: int
     round_score: int
-    post_total_score: int
+    total_score_after_round: int
 
     round_to_par: int
-    total_to_par: int
+    to_par_after_round: int
 
     def __str__(self):
         return f"{self.round_id} {self.round_num}"

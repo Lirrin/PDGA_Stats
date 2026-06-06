@@ -3,11 +3,11 @@ from typing import Optional
 from datetime import datetime
 
 @dataclass
-class TournamentPlayer:
-    "Represents a Player Entry in a Tournament"
+class EventPlayer:
+    "Represents a Player Entry in an Event"
     event_id: int
     pdga_number: int
-    rating_at_event: int
+    player_rating_at_event: int
     won_playoff: bool
     prize: str
     total_strokes: int

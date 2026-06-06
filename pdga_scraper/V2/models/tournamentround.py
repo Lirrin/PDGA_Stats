@@ -10,12 +10,10 @@ class TournamentRound:
     round_id: int
     round_code: int
     round_num: int
-    division: str
+    division_code: str
     pool: str
     course_id: int
     layout_id: int
-    shotgun_time: str
-    tee_times: str 
     is_playoff: bool
 
 

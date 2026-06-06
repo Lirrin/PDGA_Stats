@@ -4,32 +4,33 @@ from datetime import datetime
 
 @dataclass
 class HoleScore:
-    "Represents a Score on a Hole"
-    result_id: int
+    "Represents an Outcome on a Hole"
+    #result_id: int
     round_id: int
-    score_id: int
-
+    #score_id: int
     pdga_number: int
     hole_number: int
 
+    #Core Scoring
     strokes: int
     par: int
     score_to_par: int
 
-    driving: str
-    scramble: Optional[str]
-    green: Optional[str]
+    #Hole Stats
+    driving_landing_zone: str
+    scramble: Optional[bool]
+    green_regulation_zone: Optional[str] #can maybe use to derive fairway hits on par 4/5 2nd throws
 
-    c1x: Optional[int]
-    c1: Optional[int]
-    c2: Optional[int]
+    c1x_putts: Optional[int]
+    c1_putts: Optional[int]
+    c2_putts: Optional[int]
 
-    throw_in: Optional[int]
-    ob: Optional[int]
-    hazard: Optional[int]
-    missed_mando: Optional[int]
-    lost_disc: Optional[int]
-    penalty: Optional[int]
+    made_distance: Optional[int]
+    ob_strokes: Optional[int]
+    hazard_strokes: Optional[int]
+    missed_mando_strokes: Optional[int]
+    lost_disc_strokes: Optional[int] 
+    penalty_strokes: Optional[int]
 
 
     def __str__(self):

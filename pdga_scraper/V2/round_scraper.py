@@ -139,7 +139,7 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict):
                 "score_id": score_id,
                 "stat_id": stat["statId"],
                 "stat_count": stat["statCount"],
-                "stat_opportunity_count:": stat["statOpportunityCount"],
+                "stat_opportunity_count": stat["statOpportunityCount"],
                 "stat_value": stat["statValue"]
             })
         

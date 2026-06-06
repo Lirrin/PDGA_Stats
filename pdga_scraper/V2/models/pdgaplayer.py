@@ -12,7 +12,7 @@ class PDGAPlayer:
     home_city: Optional[str]
     home_state: Optional[str]
     home_country: Optional[str]
-    full_location: Optional[str]
+    home_location: Optional[str]
 
 
 

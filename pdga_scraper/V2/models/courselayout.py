@@ -8,9 +8,10 @@ class CourseLayout:
     course_id: int
     layout_id: int
     layout_name: str
-    holes: int
-    length: int
-    units: str
+    hole_count: int
+    course_par: int
+    total_length: int
+    length_unit: str
     
     def __str__(self):
         return f"{self.course_name} {self.layout_name}"
