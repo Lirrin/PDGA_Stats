@@ -48,7 +48,10 @@ def get_tournament_format(event_id):
 
     return round_list, num_rounds
 
-event_list = [96407] # placeholder
+event_list = [96407, # fpo playoff + mpo weather cancellation
+              96708, #has a  cut
+              97336 # pdga major
+              ] # placeholder
 
 #results objects
 events = {}
@@ -262,6 +265,8 @@ for event_id in event_list:
                 stat_value = rnd_stats["stat_value"]
             )
 
+#BELOW HERE IS DEBUG ONLY
+
 data_sets = {
     "events": events,
     "event_divisions": event_divisions,
@@ -276,7 +281,7 @@ data_sets = {
     "player_round_stats": player_round_stats,
 }
 
-csv_writer(data_sets)
+
         
 def csv_writer(datasets): #for troubleshooting
 
@@ -285,3 +290,5 @@ def csv_writer(datasets): #for troubleshooting
     for name, data in datasets.items():
         df = pd.DataFrame.from_dict(data, orient="index")
         df.to_csv(f"TestOutputs/{name}.csv")
+
+csv_writer(data_sets)
