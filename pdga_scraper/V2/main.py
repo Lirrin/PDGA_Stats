@@ -13,7 +13,8 @@ from models.hole import Hole
 from models.tournamentround import TournamentRound
 from models.playerround import PlayerRound
 from models.tournamentplayer import TournamentPlayer
-
+from models.pdgaplayer import PDGAPlayer
+from models.holescore import HoleScore
 
 def get_tournament_format(event_id):
     url = f"https://www.pdga.com/api/v1/live-tournaments/{event_id}/live-rounds?include=LiveRoundCut"
@@ -60,7 +61,7 @@ tournament_rounds = {}
 player_rounds = {}
 player_scores = {}
 tournament_player = {}
-players = {}
+all_players = {}
 player_round_stats = {}
 
 
@@ -207,9 +208,49 @@ for event_id in event_list:
 
 
         #player_scores = {}
+        for score in hole_scores:
+            result_id = score["result_id"]
+            score_id = score["score_id"]
+            hole_num = score["hole_number"]
+            if (round_id, result_id, score_id, hole_num) not in player_scores.keys():
+                player_scores[(round_id, result_id, score_id, hole_num)] = HoleScore(
+                    result_id = result_id,
+                    round_id = round_id,
+                    score_id = score_id,
+                    pdga_number = score["pdga_number"],
+                    hole_number = hole_num,
+                    strokes = score["score"],
+                    par = score["par"],
+                    score_to_par = score["score_to_par"],
+                    driving = score["driving"],
+                    scramble = score["scramble"],
+                    green = score["green"],
+                    c1x = score["c1x"],
+                    c1 = score["c1"],
+                    c2 = score["c2"],
+                    throwIn = score["throwIn"],
+                    ob = score["ob"],
+                    hazard = score["hazard"],
+                    missedMando = score["missedMando"],
+                    lostDisc = score["lostDisc"],
+                    penalty = score["penalty"]
+                )
 
 
-        #players = {}
+        #all_players = {}
+        for player in players:
+            pdga_num = player["pdga_number"]
+            if pdga_num not in all_players.keys():
+                player[pdga_num] = PDGAPlayer(
+                    pdga_number= pdga_num,
+                    full_name = player["full_name"],
+                    first_name = player["first_name"],
+                    last_name = player["last_name"],
+                    home_city = player["home_city"],
+                    home_state = player["home_state"],
+                    home_country = player["home_country"],
+                    full_location = player["full_location"]
+                )
 
 
         #player_round_stats = {}

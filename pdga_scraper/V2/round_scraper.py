@@ -131,7 +131,8 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict):
             "home_city": player_round["City"],
             "home_state": player_round["StateProv"],
             "home_country": player_round["Country"],
-            "full_location": player_round["FullLocation"]
+            "full_location": player_round["FullLocation"],
+            "nationality": player_round["Nationality"]
         })
         for stat in round_stats:
             round_context_stats.append({
