@@ -12,8 +12,6 @@ from models.eventplayer import EventPlayer
 from models.pdgaplayer import PDGAPlayer
 from models.holescore import HoleScore
 from models.playerroundstats import PlayerRoundStats
-import pandas as pd
-from pathlib import Path
 import time
 
 def get_tournament_format(event_id):
