@@ -9,6 +9,7 @@ from models.event import Event
 from models.eventdivision import EventDivision
 from models.course import Course
 from models.courselayout import CourseLayout
+from models.hole import Hole
 
 
 def get_tournament_format(event_id):
@@ -106,7 +107,7 @@ for event_id in event_list:
                     course_name=layout["course_name"]
             )
 
-        if layout_id not in course_layouts.keys():
+        if layout_id not in course_layouts.keys(): #assumes layout id is unique across courses
             course_layouts[layout_id] = CourseLayout(
                 course_id=course_id,
                 layout_id=layout_id,
@@ -115,6 +116,19 @@ for event_id in event_list:
                 length = layout["length"],
                 units = layout["units"]
             )
+    layout_holes = {}
+    for hole in holes:
+        layout_id = hole["layout_id"]
+        hole_num = hole["hole_number"]
+
+        if (layout_id, hole_num) not in layout_holes.keys():
+                layout_holes(layout_id, hole_num) = Hole(
+                layout_id = layout_id,
+                hole_number = hole_num,
+                par = hole["par"],
+                length = hole["hole_length"],
+                units = hole["units"]
+        )
 
 
 
