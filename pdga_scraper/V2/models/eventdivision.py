@@ -12,6 +12,7 @@ class EventDivision:
     division_name: str
     players: int
     is_pro: str
+    rounds_scored: int # num rounds with scores, not num of rounds in tournament - e..g playoff included
 
 
     def __str__(self):
