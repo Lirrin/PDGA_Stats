@@ -20,7 +20,7 @@ def get_round_stats(score_id):
     url = f"https://www.pdga.com/api/v1/feat/live-scores/{score_id}/round-stats"  
     return requests.get(url).json()
 
-def parse_round(event_id: int, division: str, round_number: int, payload: dict, isPlayoff = False):
+def parse_round(event_id: int, division: str, round_number: int, payload: dict):
     data = payload["data"]
     layouts = data["layouts"][0] # should only be 1 layout but its a list in the data so we have to pull it out like this - might need to change if we want to support multiple layouts in a round in the future
     round_info = {
@@ -34,7 +34,7 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict, 
         "live_round_id": data["live_round_id"], #might need this unsure
         "shotgun_time": data["shotgun_time"],
         "tee_times": data["tee_times"],
-        "is_playoff": isPlayoff
+
     }
 
     round_context = []
@@ -66,7 +66,7 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict, 
             )
 
             hole_scores.append({
-                "result_id": player_round["ResultID"], # unsure the difference between result id and score id
+                "result_id": player_round["ResultID"], # Think this is the pk for player x round x scorecard - maybe
                 "round_id": player_round["RoundID"], #ties to live round ID at round info level, so theoretically don't need event id
                 "score_id": score_id, # score id ties to the stats for the hole score and round
                 "round_number": round_number,
@@ -116,12 +116,12 @@ def parse_round(event_id: int, division: str, round_number: int, payload: dict, 
             #Total Scores
             #"played": player_round["Played"], # number of holes played in the round
             "previous_round_score": player_round["PrevRndTotal"], # total score from prior round
-            "grand_total": player_round["GrandTotal"], # total for the tournament so far - only updates after round ends
+            #"grand_total": player_round["GrandTotal"], # total for the tournament - shows all rounds even if you ask for an earlier round
             "round_score": player_round["RoundScore"], #total for the round - live if in progress 
-            #"sub_total": player_round["SubTotal"], # live if in progress, total for all strokes played in tournament
+            "sub_total": player_round["SubTotal"], # live if in progress, total for all strokes played in tournament thru current round
             "round_to_par": player_round["RoundtoPar"], # difference between round score and par
-            #"par_thru_round": player_round["ParThruRound"], #running total of par thru current round
-            "total_to_par": player_round["ToPar"] #what is difference between this and par thru round?
+            "par_thru_round": player_round["ParThruRound"], #running total of par thru current round
+            #"total_to_par": player_round["ToPar"] #what is difference between this and par thru round? = this isn't what the scorecard maybe its something like how many below par strokes? 
         })
         players.append({
             "pdga_number": player_round["PDGANum"],

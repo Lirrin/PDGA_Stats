@@ -10,6 +10,8 @@ from models.eventdivision import EventDivision
 from models.course import Course
 from models.courselayout import CourseLayout
 from models.hole import Hole
+from models.tournamentround import TournamentRound
+from models.playerround import PlayerRound
 
 
 def get_tournament_format(event_id):
@@ -56,6 +58,7 @@ layout_holes = {}
 tournament_rounds = {}
 player_rounds = {}
 player_scores = {}
+tournament_player = {}
 players = {}
 player_round_stats = {}
 
@@ -99,10 +102,9 @@ for event_id in event_list:
                 division = division["division"],
                 division_name = division["division_name"],
                 players = int(division["players"]) if division["players"] != "" else None,
-                is_pro = division["is_pro"]
+                is_pro = division["is_pro"],
+                final_round_code = progress["final_round"]
             )
-
-    #for now don't think I need progress
 
     for layout in course_layouts:
         course_id = layout["course_id"]
@@ -113,8 +115,8 @@ for event_id in event_list:
                     course_name=layout["course_name"]
             )
 
-        if layout_id not in course_layouts.keys(): #assumes layout id is unique across courses
-            course_layouts[layout_id] = CourseLayout(
+        if (course_id, layout_id) not in course_layouts.keys():
+            course_layouts[(course_id, layout_id)] = CourseLayout(
                 course_id=course_id,
                 layout_id=layout_id,
                 layout_name = layout["layout_name"],
@@ -140,18 +142,55 @@ for event_id in event_list:
 
     for round in rounds:
         round_payload = round_scraper.get_round(event_id, round["division"], round["round_code"])
-        if int(round["round_id"]) > int(progress["final_round"]):
+        round_id = round["round_id"]
+        if int(round_id) > int(progress["final_round"]):
             playoff=True
         else:
             playoff=False
-        round_info, hole_scores, round_context, players, round_context_stats = round_scraper.parse_round(event_id, round["division"], round["ordinal_round"], round_payload, isPlayoff=playoff)
+        round_info, hole_scores, round_context, players, round_context_stats = round_scraper.parse_round(event_id, round["division"], round["ordinal_round"], round_payload)
         
         #tournament_rounds = {}
-
-
+        if round_id not in tournament_rounds.keys():
+            tournament_rounds[round_id] = TournamentRound(
+                event_id = event_id,
+                round_id = round_id,
+                round_code = round["round_code"],
+                round_num = round["ordinal_round"],
+                division = round["division"],
+                pool = round_info["pool"],
+                course_id = round_info["course_id"],
+                layout_id = round_info["layout_id"],
+                shotgun_time = round_info["shotgun_time"],
+                tee_times = round_info["tee_times"],
+                is_playoff = playoff
+            )
 
         #player_rounds = {}
-
+        result_id = hole_scores["result_id"]
+        score_id = hole_scores["score_id"]
+        if (round_id, result_id, score_id) not in player_rounds.keys():
+            player_rounds[(round_id, result_id, score_id)] = PlayerRound(
+                result_id = result_id,
+                round_id = round_id,
+                score_id = score_id,
+                round_code = round["round_code"],
+                round_number = round["ordinal_round"],
+                is_playoff = playoff,
+                pool = round_context["pool"],
+                card_number = round_context["card_number"],
+                tee_time = round_context["TeeTime"],
+                previous_place = round_context["previous_place"] if round["ordinal_round"] > 1 else None,
+                post_place = round_context["running_place"],
+                tied = round_context["tied"],
+                round_rating = round_context["round_rating"],
+                is_complete = bool(round_context["complete"]),
+                previous_total_score = round_context["previous_round_score"],
+                round_score = round_context["round_score"],
+                post_total_score = round_context["subtotal"],
+                round_to_par = round_context["round_to_par"],
+                total_to_par = round_context["par_thru_round"]
+            )
+        #tournament_player = {}
 
         #player_scores = {}
 

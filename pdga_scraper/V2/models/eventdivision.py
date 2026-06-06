@@ -12,6 +12,7 @@ class EventDivision:
     division_name: str
     players: int
     is_pro: str
+    final_round_code: int
 
 
     def __str__(self):

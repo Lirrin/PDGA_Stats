@@ -3,6 +3,7 @@ Known Edge cases need to enure the scraper handles
 Player DNF
 
 Tournament Cuts 
+    pdga appears to assign cut players to a default layout for a round, so need to check how this comes in
 
 Weather Cancellation
     do i need to check cancelled mid-round vs shortened midround vs not played
