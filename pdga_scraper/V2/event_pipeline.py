@@ -1,14 +1,14 @@
 import requests
 import event_scraper
 import round_scraper
-from models.event import Event
-from models.eventdivision import EventDivision
-from models.course import Course
-from models.courselayout import CourseLayout
-from models.hole import Hole
+from models.event import to_event
+from models.eventdivision import to_event_division
+from models.course import to_course
+from models.courselayout import to_course_layout
+from models.hole import to_hole
 from models.tournamentround import TournamentRound
 from models.playerround import PlayerRound
-from models.eventplayer import EventPlayer
+from models.eventplayer import to_event_player
 from models.pdgaplayer import PDGAPlayer
 from models.holescore import HoleScore
 from models.playerroundstats import PlayerRoundStats
@@ -37,73 +37,30 @@ def process_event(event_id, debug=False):
     event_data, divisions, progress, layouts, holes = event_scraper.parse_event(event_id, payload, debug=debug)
 
 
-    events[event_id] = Event(
-        event_id= event_id,
-        name=event_data["name"],
-        #date_range=event_data["date_range"],
-        start_date=event_data["start_date"],
-        end_date=event_data["end_date"],
-        location_full=event_data["location"],
-        location_short=event_data["location_short"],
-        country=event_data["country"],
-        name_main=event_data["name_main"],
-        name_pre=event_data["name_pre"],
-        name_post=event_data["name_post"],
-        tier_code=event_data["raw_tier"],
-        tier_name=event_data["tier"],
-        #semis=event_data["semis"],
-        td_name=event_data["td_name"],
-        td_pdga_number=event_data["td_pdga_number"],
-        time_zone=event_data["timezone"],
-        scoring_format=event_data["scoring_format"],
-        is_x_tier=event_data["tier_x"],
-    )
+    events[event_id] = to_event(event_data)
+
     for division in divisions:
         division_id = division["division_id"]
+        division["final_round"] = progress["final_round"]
         
         if (event_id, division_id) not in event_divisions.keys():
-            event_divisions[(event_id, division_id)] = EventDivision(
-                event_id = event_id,
-                division_id = division_id,
-                division_code = division["division"],
-                division_name = division["division_name"],
-                player_count = int(division["players"]) if division["players"] != "" else None,
-                is_pro = division["is_pro"],
-                final_round_code = progress["final_round"]
-            )
+            event_divisions[(event_id, division_id)] = to_event_division(division)
 
     for layout in layouts:
         course_id = layout["course_id"]
         layout_id = layout["layout_id"]
         if course_id not in courses.keys():
-            courses[course_id] = Course(
-                    course_id=course_id,
-                    course_name=layout["course_name"]
-            )
+            courses[course_id] = to_course(layout) #returns a Course class object
 
         if (course_id, layout_id) not in course_layouts.keys():
-            course_layouts[(course_id, layout_id)] = CourseLayout(
-                course_id=course_id,
-                layout_id=layout_id,
-                layout_name = layout["layout_name"],
-                hole_count = layout["holes"],
-                course_par = layout["par"],
-                total_length = layout["length"],
-                length_unit = layout["units"]
-            )
+            course_layouts[(course_id, layout_id)] = to_course_layout(layout)
 
     for hole in holes:
         layout_id = hole["layout_id"]
         hole_num = hole["hole_number"]
 
         if (layout_id, hole_num) not in layout_holes.keys():
-                layout_holes[layout_id, hole_num] = Hole(
-                layout_id = layout_id,
-                hole_number = hole_num,
-                hole_par = hole["hole_par"],
-                hole_length = hole["hole_length"],
-                length_unit = hole["units"]
-        )
+                layout_holes[layout_id, hole_num] = to_hole(hole)
 
 
 
@@ -160,14 +117,7 @@ def process_event(event_id, debug=False):
                 )
             #tournament_player = {}
             if (event_id, pdga_num) not in tournament_player.keys():
-                tournament_player[(event_id, pdga_num)] = EventPlayer(
-                    event_id = event_id,
-                    pdga_number = pdga_num, 
-                    player_rating_at_event = context["rating_at_event"],
-                    won_playoff = context["won_playoff"],
-                    prize = context["prize"],
-                    total_strokes = context["grand_total"]
-                )
+                tournament_player[(event_id, pdga_num)] = to_event_player(context)
 
 
         #player_scores = {}
