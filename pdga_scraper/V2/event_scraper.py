@@ -5,6 +5,37 @@ def get_event(event_id):
     params = {"TournID": event_id}
     return requests.get(url, params=params).json()  
 
+def get_tournament_format(event_id):
+    url = f"https://www.pdga.com/api/v1/live-tournaments/{event_id}/live-rounds?include=LiveRoundCut"
+    return requests.get(url).json()
+
+def map_tournament_format( data, target_divisions = ['MPO', 'FPO']):
+    # Group rounds by division
+    rounds_by_division = {}
+    for round in data:
+        if round["division"] in target_divisions:
+            if round["division"] not in rounds_by_division:
+                rounds_by_division[round["division"]] = []
+            rounds_by_division[round["division"]].append(round)
+    
+    # Sort each division's rounds and assign ordinal numbers
+    round_list = []    
+    for division in rounds_by_division:
+        sorted_rounds = sorted(
+        rounds_by_division[division],
+        key=lambda r: r["round"]
+    )
+
+        for ordinal, round in enumerate(sorted_rounds, start=1):
+            round_list.append({
+                "round_id": round["roundId"],
+                "division": round["division"],
+                "round_code": round["round"],
+                "ordinal_round": ordinal
+            })
+
+    return round_list
+
 def map_event(event_id: int, data):
     return {
         "event_id": event_id,

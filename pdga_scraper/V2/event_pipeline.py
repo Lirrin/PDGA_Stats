@@ -14,39 +14,6 @@ from models.holescore import HoleScore
 from models.playerroundstats import PlayerRoundStats
 import time
 
-def get_tournament_format(event_id):
-    url = f"https://www.pdga.com/api/v1/live-tournaments/{event_id}/live-rounds?include=LiveRoundCut"
-    payload = requests.get(url).json()
-
-    # Group rounds by division
-    rounds_by_division = {}
-    for round in payload:
-        if round["division"] in ["FPO", "MPO"]:
-            if round["division"] not in rounds_by_division:
-                rounds_by_division[round["division"]] = []
-            rounds_by_division[round["division"]].append(round)
-    
-    # Sort each division's rounds and assign ordinal numbers
-    round_list = []    
-    num_rounds = {}
-    for division in rounds_by_division:
-        sorted_rounds = sorted(
-        rounds_by_division[division],
-        key=lambda r: r["round"]
-    )
-        
-        num_rounds[division] = len(sorted_rounds)
-
-        for ordinal, round in enumerate(sorted_rounds, start=1):
-            round_list.append({
-                "round_id": round["roundId"],
-                "division": round["division"],
-                "round_code": round["round"],
-                "ordinal_round": ordinal
-            })
-
-    return round_list, num_rounds
-
 def process_event(event_id, debug=False):
     #results objects
     events = {}
@@ -61,7 +28,9 @@ def process_event(event_id, debug=False):
     all_players = {}
     player_round_stats = {}
 
-    rounds, num_rounds_dict = get_tournament_format(event_id)
+
+    format = event_scraper.get_tournament_format(event_id)
+    rounds = event_scraper.map_tournament_format(format)
     
     payload = event_scraper.get_event(event_id)
 
