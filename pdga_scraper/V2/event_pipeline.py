@@ -27,11 +27,55 @@ def process_event(event_id, debug=False):
     all_players = {}
     player_round_stats = {}
 
+    if debug:
+        print(f'Now parsing event {event_id}')
 
+    # Get and Parse Event Format
     format = event_scraper.get_tournament_format(event_id)
     rounds = event_scraper.map_tournament_format(format)
     
+    #Get Event API 
     payload = event_scraper.get_event(event_id)
+    data = payload["data"]
+
+
+    #Map Event Data and save to dict of events
+    event_data = event_scraper.map_event(event_id, data)
+    events[event_id] = to_event(event_data)
+
+    #Map progress
+    progress = event_scraper.map_progress(event_id, data)
+
+    #Map Division data and save to dict of divisions
+    divisions = event_scraper.map_divisions(event_id, data)
+    for division in divisions:
+        division_id = division["division_id"]
+        division["final_round"] = progress["final_round"]
+        
+        if (event_id, division_id) not in event_divisions.keys():
+            event_divisions[(event_id, division_id)] = to_event_division(division)
+
+    #Map Courses & Layouts and save to dict of courses & layouts
+    layouts, holes = event_scraper.map_layouts(event_id, data)
+    for layout in layouts:
+        course_id = layout["course_id"]
+        layout_id = layout["layout_id"]
+        if course_id not in courses.keys():
+            courses[course_id] = to_course(layout) #returns a Course class object
+
+        if (course_id, layout_id) not in course_layouts.keys():
+            course_layouts[(course_id, layout_id)] = to_course_layout(layout)
+
+    #Map Layout Holes and save to dict of holes
+    for hole in holes:
+        layout_id = hole["layout_id"]
+        hole_num = hole["hole_number"]
+
+        if (layout_id, hole_num) not in layout_holes.keys():
+                layout_holes[layout_id, hole_num] = to_hole(hole)
+
+
+    ### BELOW HERE IS THE OLD Logic
 
     event_data, divisions, progress, layouts, holes = event_scraper.parse_event(event_id, payload, debug=debug)
 
@@ -59,9 +103,7 @@ def process_event(event_id, debug=False):
         hole_num = hole["hole_number"]
 
         if (layout_id, hole_num) not in layout_holes.keys():
-                layout_holes[layout_id, hole_num] = to_hole_score(hole)
-
-
+                layout_holes[layout_id, hole_num] = to_hole(hole)
 
     for round in rounds:
         round_payload = round_scraper.get_round(event_id, round["division"], round["round_code"])
@@ -96,7 +138,7 @@ def process_event(event_id, debug=False):
             score_id = score["score_id"]
             hole_num = score["hole_number"]
             if (round_id, result_id, score_id, hole_num) not in player_scores.keys(): # is this needed, theoretically there should be no dupes
-                player_scores[(round_id, result_id, score_id, hole_num)] = to_hole(score)
+                player_scores[(round_id, result_id, score_id, hole_num)] = to_hole_score(score)
 
         #all_players = {}
         for player in players: #No versioning for player data, which is ok for now
