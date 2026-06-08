@@ -35,3 +35,26 @@ class HoleScore:
 
     def __str__(self):
         return f"{self.score_id} {self.hole_number}"
+    
+
+def to_hole_score(score:dict):
+    return HoleScore(
+        round_id = score["round_id"],
+        pdga_number = score["pdga_number"],
+        hole_number = score["hole_num"],
+        strokes = score["score"],
+        par = score["par"],
+        score_to_par = score["score_to_par"],
+        driving_landing_zone = score["driving"],
+        scramble = score["scramble"],
+        green_regulation_zone = score["green"],
+        c1x_putts = score["c1x"],
+        c1_putts = score["c1"],
+        c2_putts = score["c2"],
+        made_distance = score["throwIn"],
+        ob_strokes = score["ob"],
+        hazard_strokes = score["hazard"],
+        missed_mando_strokes = score["missedMando"],
+        lost_disc_strokes = score["lostDisc"],
+        penalty_strokes = score["penalty"]
+    )

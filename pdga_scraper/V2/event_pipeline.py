@@ -1,4 +1,3 @@
-import requests
 import event_scraper
 import round_scraper
 from models.event import to_event
@@ -6,12 +5,12 @@ from models.eventdivision import to_event_division
 from models.course import to_course
 from models.courselayout import to_course_layout
 from models.hole import to_hole
-from models.tournamentround import TournamentRound
-from models.playerround import PlayerRound
+from models.tournamentround import to_tournament_round
+from models.playerround import to_player_round
 from models.eventplayer import to_event_player
-from models.pdgaplayer import PDGAPlayer
-from models.holescore import HoleScore
-from models.playerroundstats import PlayerRoundStats
+from models.pdgaplayer import to_player
+from models.holescore import to_hole_score
+from models.playerroundstats import to_player_round_stats
 import time
 
 def process_event(event_id, debug=False):
@@ -60,13 +59,15 @@ def process_event(event_id, debug=False):
         hole_num = hole["hole_number"]
 
         if (layout_id, hole_num) not in layout_holes.keys():
-                layout_holes[layout_id, hole_num] = to_hole(hole)
+                layout_holes[layout_id, hole_num] = to_hole_score(hole)
 
 
 
     for round in rounds:
         round_payload = round_scraper.get_round(event_id, round["division"], round["round_code"])
         round_id = round["round_id"]
+        round_code = round["round_code"],
+        round_num = round["ordinal_round"]
         if int(round_id) > int(progress["final_round"]):
             playoff=True
         else:
@@ -75,17 +76,7 @@ def process_event(event_id, debug=False):
         
         #tournament_rounds = {}
         if round_id not in tournament_rounds.keys():
-            tournament_rounds[round_id] = TournamentRound(
-                event_id = event_id,
-                round_id = round_id,
-                round_code = round["round_code"],
-                round_num = round["ordinal_round"],
-                division_code = round["division"],
-                pool = round_info["pool"],
-                course_id = round_info["course_id"],
-                layout_id = round_info["layout_id"],
-                is_playoff = playoff
-            )
+            tournament_rounds[round_id] = to_tournament_round(round_info, round_id, round_code, round_num, playoff)
 
         #player_rounds = {}
         for context in round_context:
@@ -93,28 +84,7 @@ def process_event(event_id, debug=False):
             score_id = context["score_id"]
             pdga_num = context["pdga_number"]
             if (round_id, result_id, score_id) not in player_rounds.keys(): #do we need this theoretically no dupes
-                player_rounds[(round_id, result_id, score_id)] = PlayerRound(
-                    #result_id = result_id,
-                    round_id = round_id,
-                    score_id = score_id,
-                    pdga_number = pdga_num,
-                    round_code = round["round_code"],
-                    round_number = round["ordinal_round"],
-                    is_playoff = playoff,
-                    pool = context["pool"],
-                    card_number = context["card_number"],
-                    tee_time = context["tee_time"],
-                    place_before_round = context["previous_place"] if round["ordinal_round"] > 1 else None,
-                    place_after_round = context["running_place"],
-                    is_tied = context["tied"],
-                    round_rating = context["round_rating"],
-                    is_complete = bool(context["completed"]),
-                    total_score_before_round = context["previous_round_score"],
-                    round_score = context["round_score"],
-                    total_score_after_round = context["sub_total"],
-                    round_to_par = context["round_to_par"],
-                    to_par_after_round = context["par_thru_round"]
-                )
+                player_rounds[(round_id, result_id, score_id)] = to_player_round(context, playoff)
             #tournament_player = {}
             if (event_id, pdga_num) not in tournament_player.keys():
                 tournament_player[(event_id, pdga_num)] = to_event_player(context)
@@ -126,56 +96,19 @@ def process_event(event_id, debug=False):
             score_id = score["score_id"]
             hole_num = score["hole_number"]
             if (round_id, result_id, score_id, hole_num) not in player_scores.keys(): # is this needed, theoretically there should be no dupes
-                player_scores[(round_id, result_id, score_id, hole_num)] = HoleScore(
-                    #result_id = result_id,
-                    round_id = round_id,
-                    #score_id = score_id,
-                    pdga_number = score["pdga_number"],
-                    hole_number = hole_num,
-                    strokes = score["score"],
-                    par = score["par"],
-                    score_to_par = score["score_to_par"],
-                    driving_landing_zone = score["driving"],
-                    scramble = score["scramble"],
-                    green_regulation_zone = score["green"],
-                    c1x_putts = score["c1x"],
-                    c1_putts = score["c1"],
-                    c2_putts = score["c2"],
-                    made_distance = score["throwIn"],
-                    ob_strokes = score["ob"],
-                    hazard_strokes = score["hazard"],
-                    missed_mando_strokes = score["missedMando"],
-                    lost_disc_strokes = score["lostDisc"],
-                    penalty_strokes = score["penalty"]
-                )
-
+                player_scores[(round_id, result_id, score_id, hole_num)] = to_hole(score)
 
         #all_players = {}
         for player in players: #No versioning for player data, which is ok for now
             pdga_num = player["pdga_number"]
             if pdga_num not in all_players.keys():
-                player[pdga_num] = PDGAPlayer(
-                    pdga_number= pdga_num,
-                    full_name = player["full_name"],
-                    first_name = player["first_name"],
-                    last_name = player["last_name"],
-                    home_city = player["home_city"],
-                    home_state = player["home_state"],
-                    home_country = player["home_country"],
-                    home_location = player["full_location"]
-                )
+                player[pdga_num] = to_player(player)
 
 
         #player_round_stats = {}
         for rnd_stats in round_context_stats: 
             score_id = rnd_stats["score_id"]
-            player_round_stats[score_id] = PlayerRoundStats(
-                score_id = score_id,
-                stat_id = rnd_stats["stat_id"],
-                stat_count = rnd_stats["stat_count"],
-                stat_opportunity = rnd_stats["stat_opportunity_count"],
-                stat_value = rnd_stats["stat_value"]
-            )
+            player_round_stats[score_id] = to_player_round_stats(rnd_stats)
         #sleep between rounds
         time.sleep(5) # to avoid hitting api rate limits 
 
