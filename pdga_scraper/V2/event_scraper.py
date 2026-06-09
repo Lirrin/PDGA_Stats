@@ -5,14 +5,39 @@ def get_event(event_id):
     params = {"TournID": event_id}
     return requests.get(url, params=params).json()  
 
+def get_tournament_format(event_id):
+    url = f"https://www.pdga.com/api/v1/live-tournaments/{event_id}/live-rounds?include=LiveRoundCut"
+    return requests.get(url).json()
 
+def map_tournament_format( data, target_divisions = ['MPO', 'FPO']):
+    # Group rounds by division
+    rounds_by_division = {}
+    for round in data:
+        if round["division"] in target_divisions:
+            if round["division"] not in rounds_by_division:
+                rounds_by_division[round["division"]] = []
+            rounds_by_division[round["division"]].append(round)
+    
+    # Sort each division's rounds and assign ordinal numbers
+    round_list = []    
+    for division in rounds_by_division:
+        sorted_rounds = sorted(
+        rounds_by_division[division],
+        key=lambda r: r["round"]
+    )
 
-def parse_event(event_id: int, payload: dict, debug=False):
-    if debug:
-        print(f"Now Parsing {event_id}")
-    data = payload["data"]
+        for ordinal, round in enumerate(sorted_rounds, start=1):
+            round_list.append({
+                "round_id": round["roundId"],
+                "division": round["division"],
+                "round_code": round["round"],
+                "ordinal_round": ordinal
+            })
 
-    event = {
+    return round_list
+
+def map_event(event_id: int, data):
+    return {
         "event_id": event_id,
         "date_range": data["DateRange"],
         "start_date": data["StartDate"],
@@ -31,12 +56,12 @@ def parse_event(event_id: int, payload: dict, debug=False):
         "td_pdga_number": data["TDPDGANum"],
         "timezone": data["TimeZone"],
         "scoring_format": data["ScoringFormat"],
-        "tier_x": data["TierX"] # binary flag for if its an X tier event
+        "tier_x": data["TierX"],
     }
 
-    divisions = []
-    for d in data["Divisions"]:
-        divisions.append({
+def map_divisions(event_id: int, data):
+    return [
+        {
             "event_id": event_id,
             "division_id": d["DivisionID"],
             "division": d["Division"],
@@ -44,46 +69,65 @@ def parse_event(event_id: int, payload: dict, debug=False):
             "players": d["Players"],
             "is_pro": d["IsPro"],
             "latest_round": d["LatestRound"],
-            "short_name": d["ShortName"]
-        })
+            "short_name": d["ShortName"],
+        }
+        for d in data["Divisions"]
+    ]
 
-    course_layouts = []
+def map_layouts(event_id: int, data):
+    layouts = []
     holes = []
+
     for c in data["Layouts"]:
-        courseID = c["CourseID"]
-        layoutID = c["LayoutID"]
+        layout_id = c["LayoutID"]
+        course_id = c["CourseID"]
         units = c["Units"]
 
-        course_layouts.append({
+        layouts.append({
             "event_id": event_id,
-            "layout_id": layoutID,
+            "layout_id": layout_id,
             "layout_name": c["Name"],
-            "course_id": courseID,
+            "course_id": course_id,
             "course_name": c["CourseName"],
             "holes": c["Holes"],
             "par": c["Par"],
             "length": c["Length"],
-            "units": units
+            "units": units,
         })
+
         for h in c["Details"]:
-            holes.append({ #assumes layouts are unique across courses and across events i.e. course changed 1 hole its a new layout
-                "layout_id": layoutID,
-                "course_id": courseID,
+            holes.append({
+                "layout_id": layout_id,
+                "course_id": course_id,
                 "hole_number": h["Label"],
                 "hole_par": h["Par"],
                 "hole_length": h["Length"],
-                "units": units
+                "units": units,
             })
 
-    progress = {
+    return layouts, holes
+
+def map_progress(event_id: int, data):
+    return {
         "event_id": event_id,
-        "highest_completed_round": data["HighestCompletedRound"], #if playoff it will be greater than latest round/final round
+        "highest_completed_round": data["HighestCompletedRound"],
         "latest_round": data["LatestRound"],
         "final_round": data["FinalRound"],
-        "finals": data["Finals"]
+        "finals": data["Finals"],
     }
 
-    return event, divisions, progress , course_layouts, holes
+def parse_event(event_id: int, payload, debug: bool = False):
+    data = payload["data"]
+
+    if debug:
+        print(f"Now Parsing {event_id}")
+
+    event = map_event(event_id, data)
+    divisions = map_divisions(event_id, data)
+    progress = map_progress(event_id, data)
+    layouts, holes = map_layouts(event_id, data)
+
+    return event, divisions, progress, layouts, holes
 
 if __name__ == "__main__": 
         

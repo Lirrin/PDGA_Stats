@@ -16,3 +16,11 @@ class PlayerRoundStats:
     def __str__(self):
         return f"{self.score_id} {self.stat_id}"
 
+def to_player_round_stats(rnd_stats:dict):
+    return PlayerRoundStats(
+        score_id = rnd_stats["score_id"],
+        stat_id = rnd_stats["stat_id"],
+        stat_count = rnd_stats["stat_count"],
+        stat_opportunity = rnd_stats["stat_opportunity_count"],
+        stat_value = rnd_stats["stat_value"]
+    )

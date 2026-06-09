@@ -16,3 +16,14 @@ class EventDivision:
 
     def __str__(self):
         return f"{self.event_id} {self.division}"
+    
+def to_event_division(division:dict):
+    return EventDivision(
+        event_id = division["event_id"],
+        division_id = division["division_id"],
+        division_code = division["division"],
+        division_name = division["division_name"],
+        player_count = int(division["players"]) if division["players"] != "" else None,
+        is_pro = division["is_pro"],
+        final_round_code = division["final_round"]
+    )

@@ -15,3 +15,18 @@ class CourseLayout:
     
     def __str__(self):
         return f"{self.course_name} {self.layout_name}"
+    
+
+def to_course_layout(layout:dict):
+
+    return CourseLayout(
+        course_id= layout["course_id"],
+        layout_id= layout["layout_id"],
+        layout_name = layout["layout_name"],
+        hole_count = layout["holes"],
+        course_par = layout["par"],
+        total_length = layout["length"],
+        length_unit = layout["units"]
+    )
+    
+    
