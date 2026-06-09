@@ -40,7 +40,7 @@ class PlayerRound:
         return f"{self.round_id} {self.round_num}"
     
 
-def to_player_round(context:dict, playoff:bool = False):
+def to_player_round(context:dict, round_number:int, playoff:bool = False):
     return PlayerRound(
         round_id = context["round_id"],
         score_id = context["score_id"],
@@ -51,7 +51,7 @@ def to_player_round(context:dict, playoff:bool = False):
         pool = context["pool"],
         card_number = context["card_number"],
         tee_time = context["tee_time"],
-        place_before_round = context["previous_place"] if round["ordinal_round"] > 1 else None,
+        place_before_round = context["previous_place"] if round_number > 1 else None,
         place_after_round = context["running_place"],
         is_tied = context["tied"],
         round_rating = context["round_rating"],

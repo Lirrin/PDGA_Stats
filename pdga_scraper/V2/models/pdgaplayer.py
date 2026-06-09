@@ -13,6 +13,7 @@ class PDGAPlayer:
     home_state: Optional[str]
     home_country: Optional[str]
     home_location: Optional[str]
+    nationality: Optional[str]
 
 
 
@@ -28,5 +29,6 @@ def to_player(player:dict):
         home_city = player["home_city"],
         home_state = player["home_state"],
         home_country = player["home_country"],
-        home_location = player["full_location"]
+        home_location = player["full_location"],
+        nationality = player["nationality"]
     )

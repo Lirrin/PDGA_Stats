@@ -18,7 +18,7 @@ class Hole:
 def to_hole(hole:dict):
     return Hole(
         layout_id = hole["layout_id"],
-        hole_number = hole["hole_num"],
+        hole_number = hole["hole_number"],
         hole_par = hole["hole_par"],
         hole_length = hole["hole_length"],
         length_unit = hole["units"]

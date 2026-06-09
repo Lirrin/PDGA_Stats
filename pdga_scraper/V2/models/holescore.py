@@ -22,7 +22,7 @@ def to_hole_score(score:dict):
     return HoleScore(
         round_id = score["round_id"],
         pdga_number = score["pdga_number"],
-        hole_number = score["hole_num"],
+        hole_number = score["hole_number"],
         strokes = score["score"],
         par = score["par"],
         score_to_par = score["score_to_par"],

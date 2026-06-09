@@ -32,7 +32,7 @@ class HoleBreakdown:
 def to_hole_breakdown(score:dict):
     return HoleBreakdown(
         score_id = score["score_id"],
-        pdga_number = score["pdga_number"],
+        #pdga_number = score["pdga_number"],
         hole_number = score["hole_number"],
         driving_landing_zone = score["driving"],
         scramble = score["scramble"],
