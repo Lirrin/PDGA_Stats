@@ -10,13 +10,14 @@ event_list = [96407 # fpo playoff + mpo weather cancellation
               ] # placeholder
 
 debug = True
+rnd_limit = 1
 datasets = DataSets()
 for event_id in event_list:
     try:
         if debug:
             start = datetime.now()
             print(f'Main Calling Pipeline for {event_id} at {start}')
-        pipeline(event_id, datasets, debug=debug)
+        pipeline(event_id, datasets, debug=debug, round_limit = rnd_limit)
         if debug:
             print(f"Finished {event_id} in {datetime.now() - start}")
     except Exception as e:

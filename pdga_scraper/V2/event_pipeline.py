@@ -17,14 +17,18 @@ import json
 
 import time
 
-def pipeline(event_id:int, datasets, debug: bool = False):
+def pipeline(event_id:int, datasets, debug: bool = False, round_limit:int = None):
     
     rounds = process_event(event_id, datasets, debug)
-
+    cnt = 0
     for round_info in rounds:
         try:
             process_round(event_id, datasets, round_info, debug)
             time.sleep(10) # small wait between rounds to avoid api limits
+            if round_limit:
+                cnt += 1
+                if cnt >= round_limit:
+                    break #testing function to allow only running 1
         except Exception as e:
             print(f'Failure at {event_id}. Round: {round_info["division"]}-{round_info["ordinal_round"]}')
             traceback.print_exc()
@@ -99,7 +103,8 @@ def process_hole_breakdowns(scores, datasets, debug = False):
 
     for breakdown in hole_breakdowns:
         score_id = breakdown["score_id"]
-        datasets.player_hole_stats[score_id] = (
+        hole_num = breakdown["hole_number"]
+        datasets.player_hole_stats[(score_id, hole_num)] = (
             to_hole_breakdown(breakdown)
         )
 
@@ -193,18 +198,18 @@ if __name__ == "__main__":
     datasets = DataSets()
     # #Testing Hole Breakdowns
     
-    # breakdown_cache = round_scraper.fetch_hole_breakdowns(scores)
-    # print(breakdown_cache[scores[0]["ScoreID"]][0])
-    # hole_breakdowns = round_scraper.map_hole_breakdowns(
-    #     breakdown_cache
-    # )
-    # print('~~~~~~~~~~~~~~~~~')
-    # print(hole_breakdowns[0])
-    # for breakdown in hole_breakdowns:
-    #     score_id = breakdown["score_id"]
-    #     datasets.player_hole_stats[score_id] = (
-    #         to_hole_breakdown(breakdown)
-    #     )
+    breakdown_cache = round_scraper.fetch_hole_breakdowns(scores)
+    print(breakdown_cache[scores[0]["ScoreID"]][0])
+    hole_breakdowns = round_scraper.map_hole_breakdowns(
+        breakdown_cache
+    )
+    print('~~~~~~~~~~~~~~~~~')
+    print(hole_breakdowns[0])
+    for breakdown in hole_breakdowns:
+        score_id = breakdown["score_id"]
+        datasets.player_hole_stats[score_id] = (
+            to_hole_breakdown(breakdown)
+        )
 
     #Test Round stats
     # stats_cache = round_scraper.fetch_round_stats(scores)
