@@ -4,19 +4,20 @@ from Datasets.datasets import DataSets
 import traceback
 from datetime import datetime
 
-event_list = [96407, # fpo playoff + mpo weather cancellation
-              96408, #has a  cut
-              97336 # pdga major
+event_list = [96407 # fpo playoff + mpo weather cancellation
+              #,96408 #has a  cut
+              #9,7336 # pdga major
               ] # placeholder
 
 debug = True
+rnd_limit = 1
 datasets = DataSets()
 for event_id in event_list:
     try:
         if debug:
             start = datetime.now()
             print(f'Main Calling Pipeline for {event_id} at {start}')
-        pipeline(event_id, datasets, debug=debug)
+        pipeline(event_id, datasets, debug=debug, round_limit = rnd_limit)
         if debug:
             print(f"Finished {event_id} in {datetime.now() - start}")
     except Exception as e:

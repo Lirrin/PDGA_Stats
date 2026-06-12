@@ -149,6 +149,37 @@ def map_hole_scores(event_id: int, division: str, round_number: int, data):
 
     return hole_scores_out
 
+def fetch_hole_breakdowns(scores, delay: float = 0.2):
+    breakdown_cache = {}
+
+    for s in scores:
+        score_id = s.get("ScoreID")
+        if not score_id:
+            continue
+
+        if score_id not in breakdown_cache:
+            breakdown_cache[score_id] = get_hole_breakdown(score_id)
+
+        time.sleep(delay)
+
+    return breakdown_cache
+
+
+def fetch_round_stats(scores, delay: float = 0.2):
+    stats_cache = {}
+
+    for s in scores:
+        score_id = s.get("ScoreID")
+        if not score_id:
+            continue
+
+        if score_id not in stats_cache:
+            stats_cache[score_id] = get_round_stats(score_id)
+
+        time.sleep(delay)
+
+    return stats_cache
+
 def map_hole_breakdowns(hole_breakdowns):
     out = []
     for score_id, holes in hole_breakdowns.items():
@@ -180,32 +211,28 @@ def map_hole_breakdowns(hole_breakdowns):
                 "score_id": score_id,
                 "hole_number": h.get("holeOrdinal"),
                 # raw stats (no interpretation here)
-                "driving": h.get("driving"),
-                "scramble": h.get("scramble"),
-                "green": h.get("green"),
-                "c1x": h.get("c1x"),
-                "c1": h.get("c1"),
-                "c2": h.get("c2"),
-                "throwIn": h.get("throwIn"),
-                "ob": h.get("ob"),
-                "hazard": h.get("hazard"),
-                "missedMando": h.get("missedMando"),
-                "lostDisc": h.get("lostDisc"),
-                "penalty": h.get("penalty"),
+                "driving": breakdown.get("driving"),
+                "scramble": breakdown.get("scramble"),
+                "green": breakdown.get("green"),
+                "c1x": breakdown.get("c1x"),
+                "c1": breakdown.get("c1"),
+                "c2": breakdown.get("c2"),
+                "throwIn": breakdown.get("throwIn"),
+                "ob": breakdown.get("ob"),
+                "hazard": breakdown.get("hazard"),
+                "missedMando": breakdown.get("missedMando"),
+                "lostDisc": breakdown.get("lostDisc"),
+                "penalty": breakdown.get("penalty"),
                 "has_breakdown": True
             })
 
     return out
 
-def map_round_stats(data, stats_cache):
+def map_round_stats(stats_cache):
     out = []
 
-    for p in data["scores"]:
-        score_id = p.get("ScoreID")
-        if not score_id:
-            continue
-
-        for stat in stats_cache.get(score_id, []):
+    for score_id, stats in stats_cache.items():
+        for stat in stats:
             out.append({
                 "score_id": score_id,
                 "stat_id": stat["statId"],
