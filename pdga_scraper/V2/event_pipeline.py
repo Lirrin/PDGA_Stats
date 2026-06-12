@@ -115,7 +115,8 @@ def process_round_stats(scores, datasets,debug = False):
 
     for rnd_stats in round_stats:
         score_id = rnd_stats["score_id"]
-        datasets.player_round_stats[score_id] = (
+        stat_id = rnd_stats["stat_id"]
+        datasets.player_round_stats[(score_id, stat_id)] = (
             to_player_round_stats(rnd_stats)
         )
 
@@ -191,17 +192,35 @@ if __name__ == "__main__":
                 "ScoreID": 27903530,
             }
     ]
-    #Testing Hole Breakdown
     datasets = DataSets()
-    breakdown_cache = round_scraper.fetch_hole_breakdowns(scores)
-    print(breakdown_cache)
-    hole_breakdowns = round_scraper.map_hole_breakdowns(
-        breakdown_cache
-    )
-    print('~~~~~~~~~~~~~~~~~')
-    print(hole_breakdowns[0])
-    for breakdown in hole_breakdowns:
-        score_id = breakdown["score_id"]
-        datasets.player_hole_stats[score_id] = (
-            to_hole_breakdown(breakdown)
-        )
+    # #Testing Hole Breakdowns
+    
+    # breakdown_cache = round_scraper.fetch_hole_breakdowns(scores)
+    # print(breakdown_cache[scores[0]["ScoreID"]][0])
+    # hole_breakdowns = round_scraper.map_hole_breakdowns(
+    #     breakdown_cache
+    # )
+    # print('~~~~~~~~~~~~~~~~~')
+    # print(hole_breakdowns[0])
+    # for breakdown in hole_breakdowns:
+    #     score_id = breakdown["score_id"]
+    #     datasets.player_hole_stats[score_id] = (
+    #         to_hole_breakdown(breakdown)
+    #     )
+
+    #Test Round stats
+    # stats_cache = round_scraper.fetch_round_stats(scores)
+    # #print(stats_cache)
+    # round_stats = round_scraper.map_round_stats(
+    #     stats_cache
+    # )
+
+    # for rnd_stats in round_stats:
+    #     score_id = rnd_stats["score_id"]
+    #     stat_id = rnd_stats["stat_id"]
+    #     datasets.player_round_stats[(score_id,stat_id)] = (
+    #         to_player_round_stats(rnd_stats)
+    #     )
+    #     print(rnd_stats)
+
+    # print(datasets.player_round_stats)
