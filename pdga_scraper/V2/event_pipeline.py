@@ -31,8 +31,6 @@ def pipeline(event_id:int, datasets, debug: bool = False):
             print(e)
             continue
 
-        break  # for testing limit to 1 round TO DO REMOVE THIS 
-
     return datasets
 
 def process_event(event_id, datasets, debug:bool=False):
