@@ -4,9 +4,9 @@ from Datasets.datasets import DataSets
 import traceback
 from datetime import datetime
 
-event_list = [96407, # fpo playoff + mpo weather cancellation
-              96408, #has a  cut
-              97336 # pdga major
+event_list = [96407 # fpo playoff + mpo weather cancellation
+              #,96408 #has a  cut
+              #9,7336 # pdga major
               ] # placeholder
 
 debug = True
