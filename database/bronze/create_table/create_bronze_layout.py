@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, UniqueConstraint, DateTime, func
-from db_init import Base
+from db_base import Base
 
-class CourseLayout(Base):
+class BronzeLayout(Base):
     __tablename__ = "bronze_course_layout"
 
     id = Column(Integer, primary_key=True, autoincrement=True)

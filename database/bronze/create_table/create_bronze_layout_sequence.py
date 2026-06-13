@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, UniqueConstraint, func
-from db_init import Base
+from db_base import Base
 
-class LayoutHoleSequence(Base):
-    __tablename__ = "bronze_layout_hole_sequence"
+class BronzeLayoutSequence(Base):
+    __tablename__ = "bronze_layout_sequence"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 

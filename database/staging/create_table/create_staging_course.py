@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, func, Text
-from db_init import Base
+from db_base import Base
 
 class StagingCourse(Base):
     __tablename__ = "staging_course"

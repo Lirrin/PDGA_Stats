@@ -1,7 +1,7 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, UniqueConstraint, func
-from db_init import Base
+from db_base import Base
 
-class LayoutHole(Base):
+class BronzeLayoutHole(Base):
     __tablename__ = "bronze_layout_hole"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
