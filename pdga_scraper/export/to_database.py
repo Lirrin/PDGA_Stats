@@ -48,21 +48,27 @@ def write_staging(session, datasets, source="pdga_api"):
     # player_hole_stats: dict = field(default_factory=dict)
     }
 
-    for name, dataset in datasets.__dict__.items():
+    for name, config in STAGING_TABLES.items():
+        dataset = getattr(datasets, name, None)
+        if dataset is None:
+            continue
 
-        config = STAGING_TABLES[name]
         model = config["model"]
         key_fields = config["key_fields"]
-
+        expected_key_count = len(key_fields)
         rows = []
 
         for business_key, obj in dataset.items():
-
             if not isinstance(business_key, tuple):
                 business_key = (business_key,)
 
-            key_data = dict(zip(key_fields, business_key))
+            if len(business_key) != expected_key_count:
+                raise ValueError(
+                    f"Dataset '{name}' expected {expected_key_count} key values for {key_fields}, "
+                    f"but got {len(business_key)}: {business_key}"
+                )
 
+            key_data = dict(zip(key_fields, business_key))
             rows.append(
                 model(
                     **key_data,
