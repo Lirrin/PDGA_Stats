@@ -23,14 +23,13 @@ def main(write_db: bool = False, write_csv: bool = False,
 
     for event_id in event_list:
         try:
-            if debug:
-                start = datetime.now()
-                print(f'Main Calling Pipeline for {event_id} at {start}')
+
+            start = datetime.now()
+            print(f'Main Calling Pipeline for {event_id} at {start}')
 
             pipeline(event_id, datasets, debug=debug, round_limit=rnd_limit)
 
-            if debug:
-                print(f"Finished {event_id} in {datetime.now() - start}")
+            print(f"Finished {event_id} in {datetime.now() - start}")
 
         except Exception as e:
             print(f"\n[ERROR] Event {event_id} failed")
@@ -60,4 +59,4 @@ if __name__ == '__main__':
 
     # main(write_db=args.write_db, write_csv=args.write_csv, debug=args.debug, rnd_limit=args.rnd_limit, event_list=args.events)
 
-    main(write_db=True)
+    main(write_db=True, rnd_limit=1)

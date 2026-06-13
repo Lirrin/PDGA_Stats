@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, UniqueConstraint, func
-from database.db_base import Base
+from db_base import Base
 
 class BronzeLayoutHole(Base):
     __tablename__ = "bronze_layout_hole"

@@ -1,23 +1,23 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import event
-from database.db_base import Base
+from db_base import Base
 
 #Staging
-from database.staging.create_table.create_staging_course import StagingCourse
-from database.staging.create_table.create_staging_event_division import StagingEventDivision
-from database.staging.create_table.create_staging_event import StagingEvent
-from database.staging.create_table.create_staging_layout_hole import StagingLayoutHole
-from database.staging.create_table.create_staging_layout import StagingLayout
+from staging.create_table.create_staging_course import StagingCourse
+from staging.create_table.create_staging_event_division import StagingEventDivision
+from staging.create_table.create_staging_event import StagingEvent
+from staging.create_table.create_staging_layout_hole import StagingLayoutHole
+from staging.create_table.create_staging_layout import StagingLayout
 
 #Bronze
-from database.bronze.create_table.create_bronze_course import BronzeCourse
-from database.bronze.create_table.create_bronze_division import BronzeDivision
-from database.bronze.create_table.create_bronze_event_division import BronzeEventDivision
-from database.bronze.create_table.create_bronze_event import BronzeEvent
-from database.bronze.create_table.create_bronze_layout_hole import BronzeLayoutHole
-from database.bronze.create_table.create_bronze_layout_sequence import BronzeLayoutSequence
-from database.bronze.create_table.create_bronze_layout import BronzeLayout
+from bronze.create_table.create_bronze_course import BronzeCourse
+from bronze.create_table.create_bronze_division import BronzeDivision
+from bronze.create_table.create_bronze_event_division import BronzeEventDivision
+from bronze.create_table.create_bronze_event import BronzeEvent
+from bronze.create_table.create_bronze_layout_hole import BronzeLayoutHole
+from bronze.create_table.create_bronze_layout_sequence import BronzeLayoutSequence
+from bronze.create_table.create_bronze_layout import BronzeLayout
 
 
 
@@ -43,5 +43,5 @@ def init_db():
 
 
 
-
-init_db()
+if __name__ == "__main__":
+    init_db()

@@ -132,8 +132,6 @@ def process_round(event_id, datasets, round_info, debug = False):
         if debug:
             print(f"[ROUND START] {event_id=} {division_code=} {round_number=}")
 
-        print(f"round_id: {round_code}")
-        print(f"final round: {round_info["final_round"]}")
         if int(round_code) > int(round_info["final_round"]):
             playoff=True
         else:
