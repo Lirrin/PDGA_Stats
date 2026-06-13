@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, UniqueConstraint, DateTime, func
 from db_init import Base
 
 class CourseLayout(Base):
@@ -23,6 +23,15 @@ class CourseLayout(Base):
 
     total_length = Column(Integer, nullable=False)
     length_unit = Column(String, nullable=False)
+
+    etl_created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    etl_updated_at = Column(
+        DateTime,
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
 
     __table_args__ = (
         UniqueConstraint("layout_id", name="uq_layout_id"),

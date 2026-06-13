@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, UniqueConstraint, func
 from db_init import Base
 
 class LayoutHole(Base):
@@ -18,6 +18,15 @@ class LayoutHole(Base):
     hole_par = Column(Integer, nullable=False)
     hole_length = Column(Integer, nullable=False)
     length_unit = Column(String, nullable=False)
+
+    etl_created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    etl_updated_at = Column(
+        DateTime,
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
 
     __table_args__ = (
         UniqueConstraint("layout_id", "hole_number", name="uq_layout_hole"),

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, func
 from db_init import Base
 
 class BronzeEventDivision(Base):
@@ -11,6 +11,15 @@ class BronzeEventDivision(Base):
 
     player_count = Column(Integer, nullable=False)
     final_round_code = Column(Integer, nullable=False)
+
+    etl_created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    etl_updated_at = Column(
+        DateTime,
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
 
     __table_args__ = (
         UniqueConstraint(

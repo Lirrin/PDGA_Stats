@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, func
 from db_init import Base
 
 
@@ -38,6 +38,15 @@ class BronzeEvent(Base):
 
     is_x_tier = Column(Boolean, nullable=False)
 
+
+    etl_created_at = Column(DateTime, server_default=func.now(), nullable=False)
+
+    etl_updated_at = Column(
+        DateTime,
+        server_default=func.now(),
+        onupdate=func.now(),
+        nullable=False
+    )
     __table_args__ = (
         UniqueConstraint("event_id", name="uq_event_id"),
     )
