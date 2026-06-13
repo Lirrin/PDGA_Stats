@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstra
 from db_init import Base
 
 
-class Event(Base):
+class BronzeEvent(Base):
     __tablename__ = "bronze_event"
 
     # surrogate PK
@@ -12,7 +12,7 @@ class Event(Base):
     event_id = Column(Integer, unique=True, index=True, nullable=False)
 
     # names
-    name = Column(String, nullable=False)
+    event_name = Column(String, nullable=False)
     name_main = Column(String, nullable=True)
     name_pre = Column(String, nullable=True)
     name_post = Column(String, nullable=True)
@@ -39,5 +39,5 @@ class Event(Base):
     is_x_tier = Column(Boolean, nullable=False)
 
     __table_args__ = (
-        UniqueConstraint("event_id", name="uq_event_pdga_id"),
+        UniqueConstraint("event_id", name="uq_event_id"),
     )
