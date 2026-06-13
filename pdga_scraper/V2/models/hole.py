@@ -6,6 +6,7 @@ from datetime import datetime
 class Hole:
     "Represents a Hole in a layout"
     layout_id: int
+    hole_seq: str
     hole_number: int
     hole_par: int
     hole_length: int
@@ -18,6 +19,7 @@ class Hole:
 def to_hole(hole:dict):
     return Hole(
         layout_id = hole["layout_id"],
+        hole_seq = hole["hole_seq"],
         hole_number = hole["hole_number"],
         hole_par = hole["hole_par"],
         hole_length = hole["hole_length"],
