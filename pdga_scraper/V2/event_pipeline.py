@@ -81,8 +81,8 @@ def process_event(event_id, datasets, debug:bool=False):
         if course_id not in datasets.courses:
             datasets.courses[course_id] = to_course(layout) #returns a Course class object
 
-        if (course_id, layout_id) not in datasets.course_layouts:
-            datasets.course_layouts[(course_id, layout_id)] = to_course_layout(layout)
+        if layout_id not in datasets.course_layouts:
+            datasets.course_layouts[layout_id] = to_course_layout(layout)
 
     #Map Layout Holes and save to dict of holes
     for hole in holes:

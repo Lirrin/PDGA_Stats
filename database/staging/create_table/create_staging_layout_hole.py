@@ -8,7 +8,7 @@ class StagingLayoutHole(Base):
 
     #Business key(s)
     layout_id = Column(Integer, nullable=True, index=True)
-    hole_sequence = Column(String, nullable=True, index=True)
+    hole_seq = Column(String, nullable=True, index=True)
 
     # Metadata
     source = Column(String, nullable=False)
