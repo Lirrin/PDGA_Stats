@@ -1,17 +1,13 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, func
-from db_base import Base
+from database.db_base import Base
 
-class BronzeDivision(Base):
-    __tablename__ = "bronze_division"
+class BronzeCourse(Base):
+    __tablename__ = "bronze_course"
 
+    # surrogate PK
     id = Column(Integer, primary_key=True, autoincrement=True)
-
-    division_id = Column(Integer, nullable=False, unique=True, index=True)
-
-    division_code = Column(String, nullable=False)
-    division_name = Column(String, nullable=False)
-
-    is_pro = Column(Boolean, nullable=False)
+    course_id = Column(Integer, unique=True, index=True, nullable=False)
+    course_name = Column(String, nullable=False)
 
     etl_created_at = Column(DateTime, server_default=func.now(), nullable=False)
 
@@ -23,5 +19,5 @@ class BronzeDivision(Base):
     )
 
     __table_args__ = (
-        UniqueConstraint("division_id", name="uq_division_id"),
+        UniqueConstraint("course_id", name="uq_course_id"),
     )

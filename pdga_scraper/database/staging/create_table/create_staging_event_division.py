@@ -1,13 +1,14 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, func, Text
-from db_base import Base
+from database.db_base import Base
 
-class StagingEvent(Base):
-    __tablename__ = "staging_event"
+class StagingEventDivision(Base):
+    __tablename__ = "staging_event_division"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     #Business key(s)
     event_id = Column(Integer, nullable=True, index=True)
+    division_id = Column(Integer, nullable=True, index=True)
 
     # Metadata
     source = Column(String, nullable=False)

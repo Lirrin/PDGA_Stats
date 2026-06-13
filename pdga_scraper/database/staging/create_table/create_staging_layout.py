@@ -1,13 +1,13 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, func, Text
-from db_base import Base
+from database.db_base import Base
 
-class StagingCourse(Base):
-    __tablename__ = "staging_course"
+class StagingLayout(Base):
+    __tablename__ = "staging_layout"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
 
-    # Business key(s)
-    course_id = Column(Integer, nullable=True, index=True)
+    #Business key(s)
+    layout_id = Column(Integer, nullable=True, index=True)
 
     # Metadata
     source = Column(String, nullable=False)
