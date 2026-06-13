@@ -99,7 +99,8 @@ def map_layouts(event_id: int, data):
             holes.append({
                 "layout_id": layout_id,
                 "course_id": course_id,
-                "hole_number": h["Label"],
+                "hole_seq": h["Hole"], #order of hole
+                "hole_number": h["Label"], #actual hole
                 "hole_par": h["Par"],
                 "hole_length": h["Length"],
                 "units": units,

@@ -87,10 +87,10 @@ def process_event(event_id, datasets, debug:bool=False):
     #Map Layout Holes and save to dict of holes
     for hole in holes:
         layout_id = hole["layout_id"]
-        hole_num = hole["hole_number"]
+        hole_seq = hole["hole_seq"]
 
-        if (layout_id, hole_num) not in datasets.layout_holes:
-                datasets.layout_holes[layout_id, hole_num] = to_hole(hole)
+        if (layout_id, hole_seq) not in datasets.layout_holes:
+                datasets.layout_holes[(layout_id, hole_seq)] = to_hole(hole)
 
     return rounds
 
