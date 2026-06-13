@@ -4,7 +4,7 @@ from dataclasses import fields
 
 def csv_writer(datasets):
 
-    output_dir = Path("pdga_scraper/V2/TestOutputs")
+    output_dir = Path("TestOutputs")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for field in fields(datasets):
