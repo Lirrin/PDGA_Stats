@@ -5,12 +5,12 @@ import traceback
 from datetime import datetime
 
 event_list = [96407 # fpo playoff + mpo weather cancellation
-              #,96408 #has a  cut
-              #9,7336 # pdga major
+              ,96408 #has a  cut
+              ,97336 # pdga major
               ] # placeholder
 
 debug = True
-rnd_limit = 1
+rnd_limit = 15
 datasets = DataSets()
 for event_id in event_list:
     try:

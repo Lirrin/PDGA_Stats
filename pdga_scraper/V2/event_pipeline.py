@@ -17,14 +17,14 @@ import json
 
 import time
 
-def pipeline(event_id:int, datasets, debug: bool = False, round_limit:int = None):
+def pipeline(event_id:int, datasets, debug: bool = False, round_limit:int = None, sleep = 10):
     
     rounds = process_event(event_id, datasets, debug)
     cnt = 0
     for round_info in rounds:
         try:
             process_round(event_id, datasets, round_info, debug)
-            time.sleep(10) # small wait between rounds to avoid api limits
+            time.sleep(sleep) # small wait between rounds to avoid api limits
             if round_limit:
                 cnt += 1
                 if cnt >= round_limit:
@@ -132,7 +132,9 @@ def process_round(event_id, datasets, round_info, debug = False):
         if debug:
             print(f"[ROUND START] {event_id=} {division_code=} {round_number=}")
 
-        if int(round_id) > int(round_info["final_round"]):
+        print(f"round_id: {round_code}")
+        print(f"final round: {round_info["final_round"]}")
+        if int(round_code) > int(round_info["final_round"]):
             playoff=True
         else:
             playoff=False
