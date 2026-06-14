@@ -103,8 +103,8 @@ def process_hole_breakdowns(scores, datasets, debug = False):
 
     for breakdown in hole_breakdowns:
         score_id = breakdown["score_id"]
-        hole_num = breakdown["hole_number"]
-        datasets.player_hole_stats[(score_id, hole_num)] = (
+        hole_seq = breakdown["hole_number"]
+        datasets.player_hole_stats[(score_id, hole_seq)] = (
             to_hole_breakdown(breakdown)
         )
 
@@ -156,8 +156,8 @@ def process_round(event_id, datasets, round_info, debug = False):
             result_id = p_round["result_id"] # the id uniquely identifying a round in PDGA data 
             score_id = p_round["score_id"]
             pdga_num = p_round["pdga_number"]
-            if(round_id, result_id, score_id) not in datasets.player_rounds:
-                datasets.player_rounds[(round_id, result_id, score_id)] = to_player_round(p_round, round_number, playoff)
+            if(round_id, score_id) not in datasets.player_rounds:
+                datasets.player_rounds[(round_id, score_id)] = to_player_round(p_round, round_number, playoff)
             if (event_id, pdga_num) not in datasets.tournament_player:
                 datasets.tournament_player[(event_id, pdga_num)] = to_event_player(p_round)
 
@@ -165,9 +165,9 @@ def process_round(event_id, datasets, round_info, debug = False):
         for score in hole_scores:
             result_id = score["result_id"]
             score_id = score["score_id"]
-            hole_num = score["hole_number"]
-            if (round_id, result_id, score_id, hole_num) not in datasets.player_scores: # is this needed, theoretically there should be no dupes
-                datasets.player_scores[(round_id, result_id, score_id, hole_num)] = to_hole_score(score)
+            hole_seq = score["hole_number"]
+            if (round_id, score_id, hole_seq) not in datasets.player_scores: # is this needed, theoretically there should be no dupes
+                datasets.player_scores[(round_id, score_id, hole_seq)] = to_hole_score(score)
 
         players = round_scraper.map_players(data)
         for player in players: 
