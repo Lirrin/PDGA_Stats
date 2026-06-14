@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, func
-from db_base import Base
+from database.db_base import Base
 
 class BronzeEventDivision(Base):
     __tablename__ = "bronze_event_division"

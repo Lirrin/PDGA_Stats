@@ -59,4 +59,4 @@ if __name__ == '__main__':
 
     # main(write_db=args.write_db, write_csv=args.write_csv, debug=args.debug, rnd_limit=args.rnd_limit, event_list=args.events)
 
-    main(write_db=True, rnd_limit=1)
+    main(write_csv=True, rnd_limit=1)
