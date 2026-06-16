@@ -6,7 +6,7 @@ from datetime import datetime
 class HoleBreakdown:
     "Represents stats for a hole"
     score_id: int
-    hole_number: int
+    hole_sequence: int
 
     #Hole Stats
     driving_landing_zone: str
@@ -33,7 +33,7 @@ def to_hole_breakdown(score:dict):
     return HoleBreakdown(
         score_id = score["score_id"],
         #pdga_number = score["pdga_number"],
-        hole_number = score["hole_number"],
+        hole_sequence = score["hole_number"],
         driving_landing_zone = score["driving"],
         scramble = score["scramble"],
         green_regulation_zone = score["green"],
