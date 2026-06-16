@@ -18,5 +18,8 @@ round_stats - score_id, stat_id - Player_Round_Stat
 figure out how to prevent duplicating records in staging - maybe just delete records for now
 
 start running things into staging
+    not working **********
+    figure out how to read in the csv files and just test writing to staging
+    partial commmits shouldn't occur since it runs one commit at the end 
 
 figure out upsert to bronze
