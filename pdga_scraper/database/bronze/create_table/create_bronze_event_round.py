@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Boolean, UniqueConstraint, func
-from database.db_base import Base
+from pdga_scraper.database.db_base import Base
 
 class BronzeEventRound(Base):
     __tablename__ = "bronze_event_round"
@@ -29,7 +29,7 @@ class BronzeEventRound(Base):
                        ForeignKey("bronze_course.course_id"),
                        nullable=False)
     layout_id = Column(Integer,
-                       ForeignKey("bronze_layout.layout_id"),
+                       ForeignKey("bronze_course_layout.layout_id"),
                        nullable=False)
     
 

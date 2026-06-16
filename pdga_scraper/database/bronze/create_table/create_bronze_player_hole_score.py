@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, UniqueConstraint, func
-from database.db_base import Base
+from pdga_scraper.database.db_base import Base
 
 class BronzePlayerHoleScore(Base):
     __tablename__ = "bronze_player_hole_score"
@@ -51,7 +51,7 @@ class BronzePlayerHoleScore(Base):
     __table_args__ = (
         UniqueConstraint(
             "round_id",
-            "pdga_num",
+            "pdga_number",
             "hole_sequence",
             name="uq_player_hole"
         ),

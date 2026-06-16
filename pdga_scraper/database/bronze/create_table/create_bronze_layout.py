@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, UniqueConstraint, DateTime, func
-from database.db_base import Base
+from pdga_scraper.database.db_base import Base
 
 class BronzeLayout(Base):
     __tablename__ = "bronze_course_layout"

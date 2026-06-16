@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, UniqueConstraint, func, Text
-from database.db_base import Base
+from pdga_scraper.database.db_base import Base
 
 class StagingEventRound(Base):
     __tablename__ = "staging_event_round"
@@ -8,7 +8,7 @@ class StagingEventRound(Base):
 
     # Business key(s)
     event_id = Column(Integer, nullable=True, index=True)
-    round_id = Column(Integer, nulable=True, index=True)
+    round_id = Column(Integer, nullable=True, index=True)
 
     # Metadata
     source = Column(String, nullable=False)

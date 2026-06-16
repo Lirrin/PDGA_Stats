@@ -1,5 +1,5 @@
 from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey, func, UniqueConstraint
-from database.db_base import Base
+from pdga_scraper.database.db_base import Base
 
 
 class BronzeEventPlayer(Base):
