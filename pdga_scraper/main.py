@@ -1,9 +1,16 @@
 import argparse
-from event_pipeline import pipeline
-from export.to_csv import csv_writer
-from export.to_database import write_staging
-from Datasets.datasets import DataSets
-from database.db_init import SessionLocal
+import os
+import sys
+
+ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+if ROOT_DIR not in sys.path:
+    sys.path.insert(0, ROOT_DIR)
+
+from pdga_scraper.event_pipeline import pipeline
+from pdga_scraper.export.to_csv import csv_writer
+from pdga_scraper.export.to_database import write_staging
+from pdga_scraper.Datasets.datasets import DataSets
+from pdga_scraper.database.db_init import SessionLocal
 import traceback
 from datetime import datetime
 
@@ -59,4 +66,4 @@ if __name__ == '__main__':
 
     # main(write_db=args.write_db, write_csv=args.write_csv, debug=args.debug, rnd_limit=args.rnd_limit, event_list=args.events)
 
-    main(write_csv=True, rnd_limit=1)
+    main(write_csv=True, write_db=True)

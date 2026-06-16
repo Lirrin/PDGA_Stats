@@ -1,17 +1,17 @@
-import event_scraper
-import round_scraper
-from models.event import to_event
-from models.eventdivision import to_event_division
-from models.course import to_course
-from models.courselayout import to_course_layout
-from models.hole import to_hole
-from models.tournamentround import to_tournament_round
-from models.playerround import to_player_round
-from models.eventplayer import to_event_player
-from models.pdgaplayer import to_player
-from models.holescore import to_hole_score
-from models.playerroundstats import to_player_round_stats
-from models.holebreakdown import to_hole_breakdown
+from pdga_scraper import event_scraper
+from pdga_scraper import round_scraper
+from pdga_scraper.models.event import to_event
+from pdga_scraper.models.eventdivision import to_event_division
+from pdga_scraper.models.course import to_course
+from pdga_scraper.models.courselayout import to_course_layout
+from pdga_scraper.models.hole import to_hole
+from pdga_scraper.models.tournamentround import to_tournament_round
+from pdga_scraper.models.playerround import to_player_round
+from pdga_scraper.models.eventplayer import to_event_player
+from pdga_scraper.models.pdgaplayer import to_player
+from pdga_scraper.models.holescore import to_hole_score
+from pdga_scraper.models.playerroundstats import to_player_round_stats
+from pdga_scraper.models.holebreakdown import to_hole_breakdown
 import traceback
 import json
 
@@ -156,8 +156,8 @@ def process_round(event_id, datasets, round_info, debug = False):
             result_id = p_round["result_id"] # the id uniquely identifying a round in PDGA data 
             score_id = p_round["score_id"]
             pdga_num = p_round["pdga_number"]
-            if(round_id, score_id) not in datasets.player_rounds:
-                datasets.player_rounds[(round_id, score_id)] = to_player_round(p_round, round_number, playoff)
+            if (round_id, score_id, pdga_num) not in datasets.player_rounds:
+                datasets.player_rounds[(round_id, score_id, pdga_num)] = to_player_round(p_round, round_number, playoff)
             if (event_id, pdga_num) not in datasets.tournament_player:
                 datasets.tournament_player[(event_id, pdga_num)] = to_event_player(p_round)
 
@@ -181,7 +181,7 @@ def process_round(event_id, datasets, round_info, debug = False):
         process_round_stats(data["scores"], datasets)
         
 
-from Datasets.datasets import DataSets
+from pdga_scraper.Datasets.datasets import DataSets
 if __name__ == "__main__":
     scores =  [
             {

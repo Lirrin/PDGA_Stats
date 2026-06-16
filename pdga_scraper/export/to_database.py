@@ -1,10 +1,17 @@
 from dataclasses import asdict, is_dataclass, fields
 import json
-from database.staging.create_table.create_staging_course import StagingCourse
-from database.staging.create_table.create_staging_event import StagingEvent
-from database.staging.create_table.create_staging_layout import StagingLayout
-from database.staging.create_table.create_staging_event_division import StagingEventDivision
-from database.staging.create_table.create_staging_layout_hole import StagingLayoutHole
+from pdga_scraper.database.staging.create_table.create_staging_course import StagingCourse
+from pdga_scraper.database.staging.create_table.create_staging_event import StagingEvent
+from pdga_scraper.database.staging.create_table.create_staging_event_division import StagingEventDivision
+from pdga_scraper.database.staging.create_table.create_staging_event_player import StagingEventPlayer
+from pdga_scraper.database.staging.create_table.create_staging_event_round import StagingEventRound
+from pdga_scraper.database.staging.create_table.create_staging_layout import StagingLayout
+from pdga_scraper.database.staging.create_table.create_staging_layout_hole import StagingLayoutHole
+from pdga_scraper.database.staging.create_table.create_staging_player import StagingPlayer
+from pdga_scraper.database.staging.create_table.create_staging_player_hole_score import StagingPlayerHoleScore
+from pdga_scraper.database.staging.create_table.create_staging_player_hole_stat import StagingPlayerHoleStat
+from pdga_scraper.database.staging.create_table.create_staging_player_round import StagingPlayerRound
+from pdga_scraper.database.staging.create_table.create_staging_player_round_stat import StagingPlayerRoundStat
 
 
 def serialize_payload(obj):
@@ -37,6 +44,34 @@ def write_staging(session, datasets, source="pdga_api"):
         "layout_holes": {
             "model": StagingLayoutHole,
             "key_fields": ["layout_id", "hole_seq"]
+        },
+        "tournament_rounds": {
+            "model": StagingEventRound,
+            "key_fields": ["round_id"]
+        },
+        "player_rounds": {
+            "model": StagingPlayerRound,
+            "key_fields": ["round_id", "score_id", "pdga_number"]
+        },
+        "player_scores": {
+            "model": StagingPlayerHoleScore,
+            "key_fields": ["round_id", "score_id", "hole_sequence"]
+        },
+        "tournament_player": {
+            "model": StagingEventPlayer,
+            "key_fields": ["event_id", "pdga_number"]
+        },
+        "all_players": {
+            "model": StagingPlayer,
+            "key_fields": ["pdga_number"]
+        },
+        "player_round_stats": {
+            "model": StagingPlayerRoundStat,
+            "key_fields": ["score_id", "stat_id"]
+        },
+        "player_hole_stats": {
+            "model": StagingPlayerHoleStat,
+            "key_fields": ["score_id", "hole_sequence"]
         }
 
     # tournament_rounds: dict = field(default_factory=dict)
