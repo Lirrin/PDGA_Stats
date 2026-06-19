@@ -166,8 +166,9 @@ def process_round(event_id, datasets, round_info, debug = False):
             result_id = score["result_id"]
             score_id = score["score_id"]
             hole_seq = score["hole_number"]
-            if (round_id, score_id, hole_seq) not in datasets.player_scores: # is this needed, theoretically there should be no dupes
-                datasets.player_scores[(round_id, score_id, hole_seq)] = to_hole_score(score)
+            pdga_num = score['pdga_number']
+            if (round_id, pdga_num, hole_seq) not in datasets.player_scores: # is this needed, theoretically there should be no dupes
+                datasets.player_scores[(round_id, pdga_num, hole_seq)] = to_hole_score(score)
 
         players = round_scraper.map_players(data)
         for player in players: 

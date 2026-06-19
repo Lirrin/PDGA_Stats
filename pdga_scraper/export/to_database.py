@@ -13,6 +13,17 @@ from pdga_scraper.database.staging.create_table.create_staging_player_hole_stat 
 from pdga_scraper.database.staging.create_table.create_staging_player_round import StagingPlayerRound
 from pdga_scraper.database.staging.create_table.create_staging_player_round_stat import StagingPlayerRoundStat
 
+
+def serialize_payload(obj):
+
+    if is_dataclass(obj):
+        obj = asdict(obj)
+
+    if isinstance(obj, dict):
+        return json.dumps(obj)
+
+    raise TypeError(f"Unsupported type: {type(obj)}")
+
 def build_staging_rows_by_table(datasets, STAGING_TABLES, source="pdga_api"):
     """
     Converts API-style datasets into flat row format used by both:
@@ -88,11 +99,6 @@ def build_staging_rows(dataset_dict, key_fields, source="pdga_api"):
 
     return rows
 
-def serialize_payload(obj):
-    if is_dataclass(obj):
-        return json.dumps(asdict(obj), default=str)
-
-    raise TypeError(f"Unsupported type: {type(obj)}")
 
 
 

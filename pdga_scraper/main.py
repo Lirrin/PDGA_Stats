@@ -22,7 +22,7 @@ from pdga_scraper.database.staging.create_table.create_staging_player_round impo
 from pdga_scraper.database.staging.create_table.create_staging_player_round_stat import StagingPlayerRoundStat
 
 from pdga_scraper.event_pipeline import pipeline
-from pdga_scraper.export.to_csv import csv_writer
+from pdga_scraper.export.to_csv import csv_writer, csv_reader
 from pdga_scraper.export.to_database import write_staging, build_staging_rows, build_staging_rows_by_table
 from pdga_scraper.Datasets.datasets import DataSets
 from pdga_scraper.database.db_init import SessionLocal
@@ -30,7 +30,7 @@ from pdga_scraper.database.db_init import SessionLocal
 
 def main(write_db: bool = False, write_csv: bool = False, 
          debug: bool = False, rnd_limit: int = None, event_list=None,
-         source="pdga_api"):
+         data_source="pdga_api", test_mode=False, csv_path="TestOutputs"):
     default_events = [
         96407  # fpo playoff + mpo weather cancellation
         #,96408  # has a cut
@@ -67,7 +67,7 @@ def main(write_db: bool = False, write_csv: bool = False,
         },
         "player_scores": {
             "model": StagingPlayerHoleScore,
-            "key_fields": ["round_id", "score_id", "hole_sequence"]
+            "key_fields": ["round_id", "pdga_number", "hole_sequence"]
         },
         "tournament_player": {
             "model": StagingEventPlayer,
@@ -91,27 +91,33 @@ def main(write_db: bool = False, write_csv: bool = False,
         event_list = default_events
 
     datasets = DataSets()
-    source = 'pdga_api'
+    source = data_source
 
-    for event_id in event_list:
-        try:
+    if test_mode:
+        source = "csv_file"
+        rows_by_table = csv_reader(csv_path,STAGING_TABLES)
+    else:
 
-            start = datetime.now()
-            print(f'Main Calling Pipeline for {event_id} at {start}')
+        for event_id in event_list:
+            try:
 
-            pipeline(event_id, datasets, debug=debug, round_limit=rnd_limit)
+                start = datetime.now()
+                print(f'Main Calling Pipeline for {event_id} at {start}')
 
-            print(f"Finished {event_id} in {datetime.now() - start}")
+                pipeline(event_id, datasets, debug=debug, round_limit=rnd_limit)
 
-        except Exception as e:
-            print(f"\n[ERROR] Event {event_id} failed")
-            print(f"{type(e).__name__}: {e}")
-            traceback.print_exc()
-            continue
+                print(f"Finished {event_id} in {datetime.now() - start}")
 
-    rows_by_table = build_staging_rows_by_table(datasets, STAGING_TABLES, source)
+            except Exception as e:
+                print(f"\n[ERROR] Event {event_id} failed")
+                print(f"{type(e).__name__}: {e}")
+                traceback.print_exc()
+                continue
+
+        rows_by_table = build_staging_rows_by_table(datasets, STAGING_TABLES, source)
+
     if write_csv:
-        csv_writer(rows_by_table, STAGING_TABLES)
+        csv_writer(rows_by_table, STAGING_TABLES, folder_path=csv_path)
 
     if write_db:
         session = SessionLocal()
@@ -132,4 +138,4 @@ if __name__ == '__main__':
 
     # main(write_db=args.write_db, write_csv=args.write_csv, debug=args.debug, rnd_limit=args.rnd_limit, event_list=args.events)
 
-    main(write_csv=True, write_db=False, rnd_limit=1, debug=True)
+    main(write_csv=True, write_db=True, rnd_limit=1, debug=True, test_mode=True)
