@@ -1,11 +1,17 @@
 from db_init import SessionLocal, engine
-from sqlalchemy import text
+from sqlalchemy import text, inspect
 
 # Method 2: Using raw SQL
 session = SessionLocal()
 try:
-    result = session.execute(text("SELECT * FROM staging_course LIMIT 10"))
-    for row in result:
-        print(row)
+    inspector = inspect(engine)
+    tables = inspector.get_table_names()
+
+    for table in tables:
+        print(table)
+        result = session.execute(text(f"SELECT * FROM {table} LIMIT 1"))
+        for row in result:
+            print(row)
+        print('~~~~')
 finally:
     session.close()
