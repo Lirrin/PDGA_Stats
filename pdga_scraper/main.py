@@ -137,5 +137,9 @@ if __name__ == '__main__':
     # args = parser.parse_args()
 
     # main(write_db=args.write_db, write_csv=args.write_csv, debug=args.debug, rnd_limit=args.rnd_limit, event_list=args.events)
-
-    main(write_csv=True, write_db=True, debug=True, test_mode=False)
+    events = [96409
+            ,98193
+            ,96410
+            ,101074]
+    main(write_csv=True, write_db=True, debug=True, 
+         event_list=events, test_mode=False)
