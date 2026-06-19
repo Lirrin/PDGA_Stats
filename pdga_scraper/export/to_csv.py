@@ -1,61 +1,33 @@
 import pandas as pd
 from pathlib import Path
 from dataclasses import fields
-from pdga_scraper.export.to_database import serialize_payload
+from pdga_scraper.export.to_database import serialize_payload, build_staging_rows
 import csv
 import os
 
-def csv_writer(datasets, STAGING_TABLES, folder_path = "TestOutputs", source="pdga_api"):
-    """
-    file_path_map: dict like {"courses": "courses.csv", ...}
-    datasets: same object used in db_writer (attributes per dataset)
-    """
 
+
+def csv_writer(rows_by_table, STAGING_TABLES, folder_path="TestOutputs"):
     for name, config in STAGING_TABLES.items():
-        dataset = getattr(datasets, name, None)
-        if dataset is None:
+        rows = rows_by_table.get(name)
+        if rows is None:
             continue
 
         file_path = os.path.join(folder_path, f"{name}.csv")
 
-        if not file_path:
-            raise ValueError(f"No file path provided for dataset '{name}'")
-
-        key_fields = config["key_fields"]
-        expected_key_count = len(key_fields)
-
-        rows = []
-
-        for business_key, obj in dataset.items():
-
-            # --- normalize key ---
-            if not isinstance(business_key, tuple):
-                business_key = (business_key,)
-
-            if len(business_key) != expected_key_count:
-                raise ValueError(
-                    f"Dataset '{name}' expected {expected_key_count} keys for {key_fields}, "
-                    f"but got {len(business_key)}: {business_key}"
-                )
-
-            key_data = dict(zip(key_fields, business_key))
-
-            # --- flatten row ---
-            row = {
-                **key_data,
-                "source": source,
-                "payload": serialize_payload(obj)
-            }
-
-            rows.append(row)
-
-        # --- write csv ---
         if not rows:
             continue
 
-        fieldnames = list(rows[0].keys())
+        key_fields = config["key_fields"]
+
+        base_fields = key_fields + ["source", "payload"]
+
+        fieldnames = base_fields
 
         with open(file_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.DictWriter(f, fieldnames=fieldnames)
+
             writer.writeheader()
-            writer.writerows(rows)
+
+            for row in rows:
+                writer.writerow(row)

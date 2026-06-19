@@ -49,11 +49,11 @@ def process_event(event_id, datasets, debug:bool=False):
     payload = event_scraper.get_event(event_id)
     data = payload["data"]
 
-    if debug:
-        with open(f"debug/Event_Format_Format_{event_id}.json", "w") as f:
-            json.dump(format, f, indent=4)
-        with open(f"debug/Event_Response_{event_id}.json", "w") as f1:
-            json.dump(payload, f1, indent=4)
+    # if debug:
+    #     with open(f"debug/Event_Format_Format_{event_id}.json", "w") as f:
+    #         json.dump(format, f, indent=4)
+    #     with open(f"debug/Event_Response_{event_id}.json", "w") as f1:
+    #         json.dump(payload, f1, indent=4)
 
     #Map Event Data and save to dict of events
     event_data = event_scraper.map_event(event_id, data)
@@ -141,9 +141,9 @@ def process_round(event_id, datasets, round_info, debug = False):
         round_payload = round_scraper.get_round(event_id, division_code, round_code)
         data = round_payload["data"]
 
-        if debug:
-            with open(f"debug/Data_Event_{event_id}_Division_{division_code}_Round_{round_code}.json", "w") as f:
-                json.dump(round_payload, f, indent=4)
+        # if debug:
+        #     with open(f"debug/Data_Event_{event_id}_Division_{division_code}_Round_{round_code}.json", "w") as f:
+        #         json.dump(round_payload, f, indent=4)
 
         #Get Round Metadata
         round_info = round_scraper.map_round_info(event_id, division_code, round_number, data)

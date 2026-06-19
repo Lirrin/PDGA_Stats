@@ -23,13 +23,14 @@ from pdga_scraper.database.staging.create_table.create_staging_player_round_stat
 
 from pdga_scraper.event_pipeline import pipeline
 from pdga_scraper.export.to_csv import csv_writer
-from pdga_scraper.export.to_database import write_staging
+from pdga_scraper.export.to_database import write_staging, build_staging_rows, build_staging_rows_by_table
 from pdga_scraper.Datasets.datasets import DataSets
 from pdga_scraper.database.db_init import SessionLocal
 
 
 def main(write_db: bool = False, write_csv: bool = False, 
-         debug: bool = False, rnd_limit: int = None, event_list=None):
+         debug: bool = False, rnd_limit: int = None, event_list=None,
+         source="pdga_api"):
     default_events = [
         96407  # fpo playoff + mpo weather cancellation
         #,96408  # has a cut
@@ -108,13 +109,14 @@ def main(write_db: bool = False, write_csv: bool = False,
             traceback.print_exc()
             continue
 
+    rows_by_table = build_staging_rows_by_table(datasets, STAGING_TABLES, source)
     if write_csv:
-        csv_writer(datasets, STAGING_TABLES)
+        csv_writer(rows_by_table, STAGING_TABLES)
 
     if write_db:
         session = SessionLocal()
         try:
-            write_staging(session, datasets, STAGING_TABLES=STAGING_TABLES, source=source)
+            write_staging(session, rows_by_table, STAGING_TABLES)
         finally:
             session.close()
 
@@ -130,4 +132,4 @@ if __name__ == '__main__':
 
     # main(write_db=args.write_db, write_csv=args.write_csv, debug=args.debug, rnd_limit=args.rnd_limit, event_list=args.events)
 
-    main(write_csv=True, write_db=False)
+    main(write_csv=True, write_db=False, rnd_limit=1, debug=True)
