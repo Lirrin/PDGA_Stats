@@ -1,3 +1,4 @@
+@@ -0,0 +1,37 @@
 
 
 setup staging tables  -include some basic metadata and write raw json
@@ -23,3 +24,15 @@ start running things into staging
     partial commmits shouldn't occur since it runs one commit at the end 
 
 figure out upsert to bronze
+    Reqs:
+        Can rerun without duplicating
+        Partial processing
+        can reload bronze without touching api
+
+    Basic Arhitecture
+        bronze_loader.py - main driver
+
+        loaders/
+            table1_loader.py
+
+        loaders should have etl timestamps
