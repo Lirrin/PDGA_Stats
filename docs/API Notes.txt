@@ -1,0 +1,99 @@
+Event API
+Text Link - https://www.pdga.com/apps/tournament/live-api/live_results_fetch_event?TournID=98193
+
+curl ^"https://www.pdga.com/apps/tournament/live-api/live_results_fetch_event?TournID=96410^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: en-US,en;q=0.9^" ^
+  -b ^"cookie-agreed-version=1.0.1; cookie-agreed=2; clientSettings=^%^7B^%^22favoritePlayers^%^22^%^3A^%^5B^%^5D^%^2C^%^22showFavorites^%^22^%^3Atrue^%^2C^%^22metric^%^22^%^3Afalse^%^2C^%^22colorAccessibility^%^22^%^3Afalse^%^2C^%^22darkMode^%^22^%^3Afalse^%^2C^%^22throwTracker^%^22^%^3Atrue^%^2C^%^22userTimeZoneEnabled^%^22^%^3Atrue^%^7D; _ga=GA1.2.425539817.1770465016; _ga_5L3G0CBLE3=GS2.1.s1772661383^$o8^$g1^$t1772661542^$j60^$l0^$h0^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://www.pdga.com/live/event/96410^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"148^\^", ^\^"Google Chrome^\^";v=^\^"148^\^", ^\^"Not/A)Brand^\^";v=^\^"99^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36^"
+
+Want 
+Data
+	DateRange, End Date, country, Location, Finals, FinalRound, Name, Rounds, Start Date, Tier, TournamentId, TDName, TDPGANum, TierPro, TimeZone
+Divisions
+	DivisionId, Division, Players, IsPro
+Layouts
+	LayoutID, CourseID, CourseName, Holes, Par, Length, Units
+Layouts-Details
+	Hole, Label, Par, Length
+RoundsList
+	Number, Label, Date
+
+
+
+
+Round API
+Text link - https://www.pdga.com/apps/tournament/live-api/live_results_fetch_round?TournID=98193&Division=MPO&Round=3
+
+curl ^"https://www.pdga.com/apps/tournament/live-api/live_results_fetch_round?TournID=98193^&Division=MPO^&Round=3^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: en-US,en;q=0.9^" ^
+  -b ^"cookie-agreed-version=1.0.1; cookie-agreed=2; clientSettings=^%^7B^%^22favoritePlayers^%^22^%^3A^%^5B^%^5D^%^2C^%^22showFavorites^%^22^%^3Atrue^%^2C^%^22metric^%^22^%^3Afalse^%^2C^%^22colorAccessibility^%^22^%^3Afalse^%^2C^%^22darkMode^%^22^%^3Afalse^%^2C^%^22throwTracker^%^22^%^3Atrue^%^2C^%^22userTimeZoneEnabled^%^22^%^3Atrue^%^7D; _ga=GA1.2.425539817.1770465016; _ga_5L3G0CBLE3=GS2.1.s1772661383^$o8^$g1^$t1772661542^$j60^$l0^$h0^" ^
+  -H ^"if-none-match: W/^\^"8812a88666020c372f4a7c8007643849^\^"^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://www.pdga.com/live/event/98193/MPO/scores?round=3^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"148^\^", ^\^"Google Chrome^\^";v=^\^"148^\^", ^\^"Not/A)Brand^\^";v=^\^"99^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36^"
+
+Fields want
+Parent
+	fields
+
+data 
+	pool, division, shotgun_time, tee_times, live_round_id, 
+
+scores
+	resulted, rounded, scoreid, firstname, lastname, nane, city, country, nationality, stateprov, pdganum, rating, division, pool, round, wonplayoff, prize, holes, par, layouid, 
+grandtotal, cardnum, teetime, roundscore, subtotal, roundtopar, topar, roundrating, previous place, runningplace, tied, 
+
+holescores
+	list of scores by hole
+
+layouts
+	layoutid, coursed, tournid, holes, par, length
+
+
+Standings
+This doesn't seem to add anything
+curl ^"https://www.pdga.com/apps/tournament/live-api/live_results_fetch_standings?TournID=98193^&Division=MPO^" ^
+  -H ^"accept: application/json, text/plain, */*^" ^
+  -H ^"accept-language: en-US,en;q=0.9^" ^
+  -b ^"cookie-agreed-version=1.0.1; cookie-agreed=2; clientSettings=^%^7B^%^22favoritePlayers^%^22^%^3A^%^5B^%^5D^%^2C^%^22showFavorites^%^22^%^3Atrue^%^2C^%^22metric^%^22^%^3Afalse^%^2C^%^22colorAccessibility^%^22^%^3Afalse^%^2C^%^22darkMode^%^22^%^3Afalse^%^2C^%^22throwTracker^%^22^%^3Atrue^%^2C^%^22userTimeZoneEnabled^%^22^%^3Atrue^%^7D; _ga=GA1.2.425539817.1770465016; _ga_5L3G0CBLE3=GS2.1.s1772661383^$o8^$g1^$t1772661542^$j60^$l0^$h0^" ^
+  -H ^"priority: u=1, i^" ^
+  -H ^"referer: https://www.pdga.com/live/event/98193/MPO/scores?round=3^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"148^\^", ^\^"Google Chrome^\^";v=^\^"148^\^", ^\^"Not/A)Brand^\^";v=^\^"99^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"sec-fetch-dest: empty^" ^
+  -H ^"sec-fetch-mode: cors^" ^
+  -H ^"sec-fetch-site: same-origin^" ^
+  -H ^"user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36^"
+
+
+Hole Stats Details
+accepts score id from the round API
+https://www.pdga.com/api/v1/feat/live-scores/28585052/hole-breakdowns
+
+curl ^"https://www.pdga.com/api/v1/feat/live-scores/28493449/hole-breakdowns^" ^
+  -H ^"sec-ch-ua-platform: ^\^"Windows^\^"^" ^
+  -H ^"Referer: https://www.pdga.com/live/event/98193/MPO/scores?round=3^" ^
+  -H ^"User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/148.0.0.0 Safari/537.36^" ^
+  -H ^"Accept: application/json, text/plain, */*^" ^
+  -H ^"sec-ch-ua: ^\^"Chromium^\^";v=^\^"148^\^", ^\^"Google Chrome^\^";v=^\^"148^\^", ^\^"Not/A)Brand^\^";v=^\^"99^\^"^" ^
+  -H ^"sec-ch-ua-mobile: ?0^"
+
+
+appears i'd need to calc the round stats and use definitions to back into things like c1x putting %
