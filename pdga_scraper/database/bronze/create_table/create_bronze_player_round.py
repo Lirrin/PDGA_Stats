@@ -8,7 +8,7 @@ class BronzePlayerRound(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     round_id = Column(Integer, nullable=False, index=True)
-    score_id = Column(Integer, nullable=False, index=True)
+    score_id = Column(Integer, nullable=True, index=True)
 
     pdga_number = Column(
         Integer,
