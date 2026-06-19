@@ -9,7 +9,7 @@ class StagingPlayerRound(Base):
 
     # Business key(s) (for lookup / upsert routing)
     round_id = Column(Integer, nullable=False, index=True)
-    score_id = Column(Integer, nullable=False, index=True)
+    score_id = Column(Integer, nullable=True, index=True)
     pdga_number = Column(Integer, nullable=False, index=True)
 
     # Metadata
