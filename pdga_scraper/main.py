@@ -1,32 +1,96 @@
 import argparse
 import os
 import sys
+import traceback
+from datetime import datetime
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT_DIR not in sys.path:
     sys.path.insert(0, ROOT_DIR)
+
+from pdga_scraper.database.staging.create_table.create_staging_course import StagingCourse
+from pdga_scraper.database.staging.create_table.create_staging_event import StagingEvent
+from pdga_scraper.database.staging.create_table.create_staging_event_division import StagingEventDivision
+from pdga_scraper.database.staging.create_table.create_staging_event_player import StagingEventPlayer
+from pdga_scraper.database.staging.create_table.create_staging_event_round import StagingEventRound
+from pdga_scraper.database.staging.create_table.create_staging_layout import StagingLayout
+from pdga_scraper.database.staging.create_table.create_staging_layout_hole import StagingLayoutHole
+from pdga_scraper.database.staging.create_table.create_staging_player import StagingPlayer
+from pdga_scraper.database.staging.create_table.create_staging_player_hole_score import StagingPlayerHoleScore
+from pdga_scraper.database.staging.create_table.create_staging_player_hole_stat import StagingPlayerHoleStat
+from pdga_scraper.database.staging.create_table.create_staging_player_round import StagingPlayerRound
+from pdga_scraper.database.staging.create_table.create_staging_player_round_stat import StagingPlayerRoundStat
 
 from pdga_scraper.event_pipeline import pipeline
 from pdga_scraper.export.to_csv import csv_writer
 from pdga_scraper.export.to_database import write_staging
 from pdga_scraper.Datasets.datasets import DataSets
 from pdga_scraper.database.db_init import SessionLocal
-import traceback
-from datetime import datetime
 
 
 def main(write_db: bool = False, write_csv: bool = False, 
          debug: bool = False, rnd_limit: int = None, event_list=None):
     default_events = [
-        96407,  # fpo playoff + mpo weather cancellation
-        96408,  # has a cut
-        97336,  # pdga major
+        96407  # fpo playoff + mpo weather cancellation
+        #,96408  # has a cut
+        #,97336  # pdga major
     ]
+    STAGING_TABLES = {
+        "course_layouts": {
+            "model": StagingLayout,
+            "key_fields": ["layout_id"]
+        },
+        "courses": {
+            "model": StagingCourse,
+            "key_fields": ["course_id"]
+        },
+        "events": {
+            "model": StagingEvent,
+            "key_fields": ["event_id"]
+        },
+        "event_divisions": {
+            "model": StagingEventDivision,
+            "key_fields": ["event_id", "division_id"]
+        },
+        "layout_holes": {
+            "model": StagingLayoutHole,
+            "key_fields": ["layout_id", "hole_seq"]
+        },
+        "tournament_rounds": {
+            "model": StagingEventRound,
+            "key_fields": ["round_id"]
+        },
+        "player_rounds": {
+            "model": StagingPlayerRound,
+            "key_fields": ["round_id", "score_id", "pdga_number"]
+        },
+        "player_scores": {
+            "model": StagingPlayerHoleScore,
+            "key_fields": ["round_id", "score_id", "hole_sequence"]
+        },
+        "tournament_player": {
+            "model": StagingEventPlayer,
+            "key_fields": ["event_id", "pdga_number"]
+        },
+        "all_players": {
+            "model": StagingPlayer,
+            "key_fields": ["pdga_number"]
+        },
+        "player_round_stats": {
+            "model": StagingPlayerRoundStat,
+            "key_fields": ["score_id", "stat_id"]
+        },
+        "player_hole_stats": {
+            "model": StagingPlayerHoleStat,
+            "key_fields": ["score_id", "hole_sequence"]
+        }
+    }
 
     if event_list is None:
         event_list = default_events
 
     datasets = DataSets()
+    source = 'pdga_api'
 
     for event_id in event_list:
         try:
@@ -45,12 +109,12 @@ def main(write_db: bool = False, write_csv: bool = False,
             continue
 
     if write_csv:
-        csv_writer(datasets)
+        csv_writer(datasets, STAGING_TABLES)
 
     if write_db:
         session = SessionLocal()
         try:
-            write_staging(session, datasets)
+            write_staging(session, datasets, STAGING_TABLES=STAGING_TABLES, source=source)
         finally:
             session.close()
 
@@ -66,4 +130,4 @@ if __name__ == '__main__':
 
     # main(write_db=args.write_db, write_csv=args.write_csv, debug=args.debug, rnd_limit=args.rnd_limit, event_list=args.events)
 
-    main(write_csv=True, write_db=True)
+    main(write_csv=True, write_db=False)

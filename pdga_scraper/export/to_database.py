@@ -22,66 +22,7 @@ def serialize_payload(obj):
 
 
 
-def write_staging(session, datasets, source="pdga_api"):
-
-    STAGING_TABLES = {
-        "course_layouts": {
-            "model": StagingLayout,
-            "key_fields": ["layout_id"]
-        },
-        "courses": {
-            "model": StagingCourse,
-            "key_fields": ["course_id"]
-        },
-        "events": {
-            "model": StagingEvent,
-            "key_fields": ["event_id"]
-        },
-        "events_divisions": {
-            "model": StagingEventDivision,
-            "key_fields": ["event_id", "division_id"]
-        },
-        "layout_holes": {
-            "model": StagingLayoutHole,
-            "key_fields": ["layout_id", "hole_seq"]
-        },
-        "tournament_rounds": {
-            "model": StagingEventRound,
-            "key_fields": ["round_id"]
-        },
-        "player_rounds": {
-            "model": StagingPlayerRound,
-            "key_fields": ["round_id", "score_id", "pdga_number"]
-        },
-        "player_scores": {
-            "model": StagingPlayerHoleScore,
-            "key_fields": ["round_id", "score_id", "hole_sequence"]
-        },
-        "tournament_player": {
-            "model": StagingEventPlayer,
-            "key_fields": ["event_id", "pdga_number"]
-        },
-        "all_players": {
-            "model": StagingPlayer,
-            "key_fields": ["pdga_number"]
-        },
-        "player_round_stats": {
-            "model": StagingPlayerRoundStat,
-            "key_fields": ["score_id", "stat_id"]
-        },
-        "player_hole_stats": {
-            "model": StagingPlayerHoleStat,
-            "key_fields": ["score_id", "hole_sequence"]
-        }
-
-    # tournament_rounds: dict = field(default_factory=dict)
-    # player_rounds: dict = field(default_factory=dict)
-    # player_scores: dict = field(default_factory=dict)
-    # tournament_player: dict = field(default_factory=dict)
-    # all_players: dict = field(default_factory=dict)
-    # player_round_stats: dict = field(default_factory=dict)
-    # player_hole_stats: dict = field(default_factory=dict)
-    }
+def write_staging(session, datasets, STAGING_TABLES, source="pdga_api"):
 
     for name, config in STAGING_TABLES.items():
         dataset = getattr(datasets, name, None)
