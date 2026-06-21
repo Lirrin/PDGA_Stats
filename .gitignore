@@ -227,3 +227,4 @@ TestOutputs/
 pdga_scraper/V2/Notes.md
 debug/*
 /data/
+data/pdga.db

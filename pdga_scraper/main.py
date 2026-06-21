@@ -99,6 +99,7 @@ def main(write_db: bool = False, write_csv: bool = False,
     else:
 
         for event_id in event_list:
+            time_start = datetime.now()
             try:
 
                 start = datetime.now()
@@ -113,6 +114,12 @@ def main(write_db: bool = False, write_csv: bool = False,
                 print(f"{type(e).__name__}: {e}")
                 traceback.print_exc()
                 continue
+            
+            time_end = datetime.now()
+            elapsed = time_end-time_start
+            print(f'Total Execution time: {elapsed}.')
+            print(f'{len(event_list)} events processed.')
+            print(f'Average time: {elapsed/len(event_list)}.')
 
         rows_by_table = build_staging_rows_by_table(datasets, STAGING_TABLES, source)
 
@@ -137,9 +144,12 @@ if __name__ == '__main__':
     # args = parser.parse_args()
 
     # main(write_db=args.write_db, write_csv=args.write_csv, debug=args.debug, rnd_limit=args.rnd_limit, event_list=args.events)
-    events = [96409
-            ,98193
-            ,96410
-            ,101074]
+    events = [77775,
+                77758,
+                77759,
+                77091,
+                77760,
+                77761,
+                77762,]
     main(write_csv=True, write_db=True, debug=True, 
          event_list=events, test_mode=False)
