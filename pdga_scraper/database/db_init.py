@@ -1,9 +1,13 @@
 import os
 import sys
+from dotenv import load_dotenv
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import event
+
+# Load environment variables from .env file
+load_dotenv()
 
 ROOT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 if ROOT_DIR not in sys.path:
@@ -43,7 +47,10 @@ from pdga_scraper.database.bronze.create_table.create_bronze_player_round_stat i
 
 
 # --- Engine ---
-engine = create_engine("sqlite:///data/pdga.db", echo=False)
+db_path = os.getenv("PDGA_DB_PATH", "sqlite:///data/pdga.db")
+if not db_path.startswith("sqlite:///"):
+    db_path = f"sqlite:///{db_path}"
+engine = create_engine(db_path, echo=False)
 
 @event.listens_for(engine, "connect")
 def enable_sqlite_fks(dbapi_connection, connection_record):
