@@ -1,6 +1,7 @@
 import json
 from pdga_scraper.database.staging.create_table.create_staging_event import StagingEvent
 from pdga_scraper.database.bronze.create_table.create_bronze_event import BronzeEvent
+from pdga_scraper.database.db_init import SessionLocal
 
 def build_bronze_event(payload):
     return BronzeEvent(
@@ -34,8 +35,6 @@ def build_bronze_event(payload):
         is_x_tier = payload["is_x_tier"]
 
     )
-
-
 
 
 def load_bronze_event(session):
@@ -88,3 +87,10 @@ def load_bronze_event(session):
         f"BronzeEvent load complete. "
         f"Inserted={inserted}, Skipped={skipped}"
     )
+
+if __name__ == "__main__":
+    session = SessionLocal()
+    print("Running Load Bronze Event")
+    load_bronze_event(session)
+    print('Done')
+    session.close()

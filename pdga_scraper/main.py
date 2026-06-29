@@ -143,6 +143,15 @@ if __name__ == '__main__':
     # args = parser.parse_args()
 
     # main(write_db=args.write_db, write_csv=args.write_csv, debug=args.debug, rnd_limit=args.rnd_limit, event_list=args.events)
-    events = [77099,77763]
+    events = [79049,
+                78193,
+                77764,
+                77765,
+                78647,
+                77766,
+                78666,
+                78194,
+                78271,
+                78654]
     main(write_csv=True, write_db=True, debug=True, 
          event_list=events, test_mode=False)
