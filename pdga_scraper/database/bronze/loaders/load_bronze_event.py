@@ -1,7 +1,56 @@
 import json
 from pdga_scraper.database.staging.create_table.create_staging_event import StagingEvent
 from pdga_scraper.database.bronze.create_table.create_bronze_event import BronzeEvent
-from pdga_scraper.database.db_init import SessionLocal
+from pdga_scraper.database.db_init import SessionLocal, engine
+from datetime import datetime, timezone
+
+def reset_bronze(session, event_ids=None, full_reset=False):
+    """
+    Manual utility only.
+    Resets bronze + staging state.
+
+    - full_reset=True → wipes everything (DEV ONLY)
+    - event_ids=[...] → targeted reset
+    """
+
+    if full_reset and event_ids:
+        raise ValueError("Choose either full_reset OR event_ids, not both")
+
+    # -------------------------
+    # FULL RESET (danger zone)
+    # -------------------------
+    if full_reset:
+        session.query(BronzeEvent).delete()
+
+        session.query(StagingEvent).update({
+            StagingEvent.status: "pending",
+            StagingEvent.error_message: None
+        })
+
+        session.commit()
+        print("FULL RESET COMPLETE")
+        return
+
+    # -------------------------
+    # TARGETED RESET
+    # -------------------------
+    if event_ids:
+        session.query(BronzeEvent).filter(
+            BronzeEvent.event_id.in_(event_ids)
+        ).delete(synchronize_session=False)
+
+        session.query(StagingEvent).filter(
+            StagingEvent.event_id.in_(event_ids)
+        ).update({
+            StagingEvent.status: "pending",
+            StagingEvent.error_message: None
+        }, synchronize_session=False)
+
+        session.commit()
+        print(f"RESET COMPLETE for {len(event_ids)} events")
+        return
+
+    raise ValueError("Must provide event_ids or full_reset=True")
 
 def build_bronze_event(payload):
     return BronzeEvent(
@@ -14,8 +63,8 @@ def build_bronze_event(payload):
         name_post = payload["name_post"],
 
         # dates
-        start_date = payload["start_date"],
-        end_date = payload["end_date"],
+        start_date = datetime.strptime(payload["start_date"], "%Y-%m-%d").date(),
+        end_date = datetime.strptime(payload["end_date"], "%Y-%m-%d").date(),
 
         # location
         location_full = payload["location_full"],
@@ -37,7 +86,7 @@ def build_bronze_event(payload):
     )
 
 
-def load_bronze_event(session):
+def load_bronze_event(session, status_filter = ("pending",)):
     """
     Load unprocessed staging events into bronze.
     Insert-only MVP version.
@@ -45,12 +94,13 @@ def load_bronze_event(session):
 
     staging_events = (
         session.query(StagingEvent)
-        .filter(StagingEvent.status == "pending")
+        .filter(StagingEvent.status.in_(status_filter))
         .all()
     )
 
-    inserted = 0
+    processed = 0
     skipped = 0
+    errored = 0
 
     existing_events = {
         row[0]
@@ -60,37 +110,50 @@ def load_bronze_event(session):
     for staging in staging_events:
         if staging.event_id in existing_events:
             staging.status = "processed"
+            staging.processed_at = datetime.now(timezone.utc)
+            session.commit()
             skipped += 1
             continue
-        else:
-            try:
-                payload = json.loads(staging.payload)
-                bronze_event = build_bronze_event(payload)
-                session.add(bronze_event)
-                session.flush()
 
-                staging.status = "processed"
-                inserted += 1
-                existing_events.add(bronze_event.event_id)
+        try:
+            payload = json.loads(staging.payload)
+            bronze_event = build_bronze_event(payload)
 
-            except Exception as e:
-                staging.status = "failed"
-                staging.error_message = str(e)
-                
+            session.add(bronze_event)
+            session.flush()
+            #print("FLUSH OK:", bronze_event.event_id)
 
-                # already exists in bronze
-                skipped += 1
+            staging.status = "processed"
+            staging.processed_at = datetime.now(timezone.utc)
+            session.commit() # commits bronze + staging
+
+            processed += 1
+            existing_events.add(bronze_event.event_id)
+
+        except Exception as e:
+            session.rollback()  # 🔥 THIS is the missing piece
+
+            staging.status = "failed"
+            staging.processed_at = datetime.now(timezone.utc)
+            staging.error_message = str(e)
+            session.commit()
+            errored += 1
 
     session.commit()
+    #print("COMMIT DONE")
 
     print(
         f"BronzeEvent load complete. "
-        f"Inserted={inserted}, Skipped={skipped}"
+        f"Processed={processed}, Skipped={skipped}, Errored = {errored}"
     )
+
+
 
 if __name__ == "__main__":
     session = SessionLocal()
     print("Running Load Bronze Event")
     load_bronze_event(session)
+    #reset_bronze(session,full_reset=True)
     print('Done')
     session.close()
+

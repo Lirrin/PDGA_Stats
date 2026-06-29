@@ -33,7 +33,7 @@ class BronzeEvent(Base):
     td_name = Column(String, nullable=False)
     td_pdga_number = Column(Integer, nullable=False)
 
-    time_zone = Column(String, nullable=False)
+    time_zone = Column(String, nullable=True)
     scoring_format = Column(String, nullable=False)
 
     is_x_tier = Column(Boolean, nullable=False)
