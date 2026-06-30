@@ -36,3 +36,28 @@ figure out upsert to bronze
             table1_loader.py
 
         loaders should have etl timestamps
+
+Bronze_Event_Division not linked to event or division
+Bronze event player not linked to division but has division
+Bronze player hole score not linked to player round
+Bronze player round not linked to event round
+Bronze event round not linked to diviion
+
+Level 0 (No dependencies)
+    course
+    division
+    event - loader built
+    player
+Level 1 (Only depend on Level 0)
+    layout          -> course
+    event_division  -> event, division
+Level 2 (Depend on Level 1 and earlier)
+    layout_sequence -> layout
+    layout_hole     -> layout
+    event_round     -> event, course, layout
+    event_player    -> event, player
+Level 3 (Depend on Level 2)
+    player_round      -> player, event_round
+Level 4 (Depend on Level 3)
+    player_round_stat -> player_round
+    player_hole_score -> player_round, layout_hole

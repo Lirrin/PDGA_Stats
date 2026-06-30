@@ -4,7 +4,7 @@ from pdga_scraper.database.bronze.create_table.create_bronze_event import Bronze
 from pdga_scraper.database.db_init import SessionLocal, engine
 from datetime import datetime, timezone
 
-def reset_bronze(session, event_ids=None, full_reset=False):
+def reset_bronze_event(session, event_ids=None, full_reset=False):
     """
     Manual utility only.
     Resets bronze + staging state.
@@ -131,7 +131,7 @@ def load_bronze_event(session, status_filter = ("pending",)):
             existing_events.add(bronze_event.event_id)
 
         except Exception as e:
-            session.rollback()  # 🔥 THIS is the missing piece
+            session.rollback()  # THIS is the missing piece
 
             staging.status = "failed"
             staging.processed_at = datetime.now(timezone.utc)
@@ -153,7 +153,7 @@ if __name__ == "__main__":
     session = SessionLocal()
     print("Running Load Bronze Event")
     load_bronze_event(session)
-    #reset_bronze(session,full_reset=True)
+    #reset_bronze_event(session,full_reset=True)
     print('Done')
     session.close()
 
