@@ -44,8 +44,8 @@ Bronze player round not linked to event round
 Bronze event round not linked to diviion
 
 Level 0 (No dependencies)
-    course
-    division
+    course - loader built 
+    division - loader built does not update staging since its implied not direct
     event - loader built
     player
 Level 1 (Only depend on Level 0)
